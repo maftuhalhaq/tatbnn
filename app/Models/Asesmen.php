@@ -10,7 +10,7 @@ class Asesmen extends Model
 {
     use HasFactory;
 
-    // Cukup gunakan ini agar semua kolom di tabel asesmens bisa diisi secara massal
+    // Mengizinkan semua kolom diisi secara massal kecuali kolom 'id'
     protected $guarded = ['id'];
 
     protected $table = 'asesmens';
@@ -19,7 +19,7 @@ class Asesmen extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    // Event Booting: Otomatis generate UUID
+    // Event Booting: Otomatis generate UUID saat data baru dibuat
     protected static function boot()
     {
         parent::boot();
@@ -31,6 +31,7 @@ class Asesmen extends Model
     }
 
     // --- Relasi BelongsTo ke Tabel Master ---
+
     public function pekerjaan()
     {
         return $this->belongsTo(Pekerjaan::class, 'pekerjaan_id');

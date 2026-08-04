@@ -3,144 +3,125 @@
 namespace App\Imports;
 
 use App\Models\Asesmen;
-use App\Models\Narkotika;
 use App\Models\Pendidikan;
 use App\Models\Pekerjaan;
+use App\Models\Narkotika;
 use App\Models\Rekomendasi;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Carbon\Carbon;
 
-class AsesmenImport implements ToModel, WithStartRow
+class AsesmenImport implements ToModel, WithHeadingRow, SkipsEmptyRows
 {
     /**
-     * Memulai baca data dari baris ke-4 (karena baris 1-3 adalah header/keterangan)
+     * Menentukan baris ke berapa header kolom berada di file Excel Anda
+     * (Karena baris 1 petunjuk, baris 2 judul kolom, maka data mulai baris 3 atau 4 tergantung heading row)
      */
-    public function startRow(): int
+    public function headingRow(): int
     {
-        return 4;
+        return 2; // Sesuai template di mana judul kolom ada di baris ke-2
     }
 
-    /**
-     * Memetakan data dari baris Excel ke dalam Model Asesmen
-     */
     public function model(array $row)
     {
-        // 1. Cek apakah baris ini kosong (misal nama klien kosong, abaikan baris ini)
-        if (!isset($row[9]) || empty($row[9])) {
-            return null;
-        }
-
-        // 2. Format Tanggal (Konversi dari format Excel/Teks menjadi format SQL YYYY-MM-DD)
-        $tgl_surat = $this->transformDate($row[3]);
-        $tgl_berkas = $this->transformDate($row[4]);
-        $tgl_pelaksanaan = $this->transformDate($row[5]);
-        $tgl_tangkap = $this->transformDate($row[8]);
-        $tgl_lahir = $this->transformDate($row[14]);
-
-        // 3. Cari ID dari Tabel Relasi (Master Data) berdasarkan teks dari Excel
-
-        // Cari ID Pendidikan (Kolom R / index 17)
+        // 1. Tangani Relasi Master Pendidikan (Jika diisi teks, cari atau buat baru)
         $pendidikanId = null;
-        if (!empty($row[17])) {
-            $pendidikan = Pendidikan::where('nama_pendidikan', $row[17])
-                ->orWhere('jenis_pendidikan', $row[17])
-                ->first();
-            $pendidikanId = $pendidikan ? $pendidikan->id : null;
+        if (!empty($row['pendidikan'])) {
+            $pendidikan = Pendidikan::firstOrCreate(['nama_pendidikan' => trim($row['pendidikan'])]);
+            $pendidikanId = $pendidikan->id;
         }
 
-        // Cari ID Pekerjaan (Kolom S / index 18)
+        // 2. Tangani Relasi Master Pekerjaan
         $pekerjaanId = null;
-        if (!empty($row[18])) {
-            $pekerjaan = Pekerjaan::where('nama_pekerjaan', $row[18])
-                ->orWhere('jenis_pekerjaan', $row[18])
-                ->first();
-            $pekerjaanId = $pekerjaan ? $pekerjaan->id : null;
+        if (!empty($row['pekerjaan'])) {
+            $pekerjaan = Pekerjaan::firstOrCreate(['nama_pekerjaan' => trim($row['pekerjaan'])]);
+            $pekerjaanId = $pekerjaan->id;
         }
 
-        // Cari ID Narkotika (Kolom W / index 22)
+        // 3. Tangani Relasi Master Narkotika
         $narkotikaId = null;
-        if (!empty($row[22])) {
-            $narkotika = Narkotika::where('jenis_narkotika', $row[22])->first();
-            $narkotikaId = $narkotika ? $narkotika->id : null;
+        if (!empty($row['jenis_narkotika'])) {
+            $narkotika = Narkotika::firstOrCreate(['jenis_narkotika' => trim($row['jenis_narkotika'])]);
+            $narkotikaId = $narkotika->id;
         }
 
-        // Cari ID Rekomendasi TAT (Kolom AN / index 39)
+        // 4. Tangani Relasi Master Rekomendasi TAT
         $rekomendasiId = null;
-        if (!empty($row[39])) {
-            $rekomendasi = Rekomendasi::where('tempat_rehabilitasi', $row[39])->first();
-            $rekomendasiId = $rekomendasi ? $rekomendasi->id : null;
+        if (!empty($row['rekomendasi_tat'])) {
+            $rekomendasi = Rekomendasi::firstOrCreate(['tempat_rehabilitasi' => trim($row['rekomendasi_tat'])]);
+            $rekomendasiId = $rekomendasi->id;
         }
 
-        // 4. Masukkan data ke dalam Model
-        return new Asesmen([
-            // --- DATA ADMINISTRASI & IDENTITAS (Sama Seperti Sebelumnya) ---
-            'no_bln' => $row[2],
-            'tgl_surat' => $tgl_surat,
-            'tgl_berkas' => $tgl_berkas,
-            'tgl_pelaksanaan' => $tgl_pelaksanaan,
-            'no_surat_pengajuan' => $row[6],
-            'no_lkn' => $row[7],
-            'tgl_tangkap' => $tgl_tangkap,
+        // Fungsi helper untuk membersihkan format tanggal Excel
+        $parseDate = function ($value) {
+            if (empty($value))
+                return null;
+            try {
+                if (is_numeric($value)) {
+                    return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)->format('Y-m-d');
+                }
+                return Carbon::parse($value)->format('Y-m-d');
+            } catch (\Exception $e) {
+                return null;
+            }
+        };
 
-            'nama_lengkap' => $row[9],
-            'no_register' => $row[10],
-            'alamat_ktp' => $row[11],
-            'alamat_domisili' => $row[12],
-            'tempat_lahir' => $row[13],
-            'tgl_lahir' => $tgl_lahir,
-            'jenis_kelamin' => in_array(strtoupper($row[15]), ['L', 'P']) ? strtoupper($row[15]) : null,
-            // (Usia di kolom 16 biasanya tidak disimpan ke DB, karena bisa dikalkulasi dari tgl_lahir)
+        // 5. Simpan atau Update data berdasarkan NIK (mencegah duplikat jika diimport ulang)
+        return Asesmen::updateOrCreate(
+            ['nik' => trim($row['nik'] ?? '0000000000000000')], // Kunci pencarian unik
+            [
+                'nama_lengkap' => $row['nama_lengkap'] ?? '-',
+                'kewarganegaraan' => $row['kewarganegaraan'] ?? 'WNI',
+                'tempat_lahir' => $row['tempat_lahir'] ?? null,
+                'tgl_lahir' => $parseDate($row['tanggal_lahir'] ?? null),
+                'jenis_kelamin' => strtoupper($row['jenis_kelamin_lp'] ?? 'L') === 'P' ? 'P' : 'L',
+                'no_hp' => $row['no_hp'] ?? null,
+                'pendidikan_id' => $pendidikanId,
+                'pekerjaan_id' => $pekerjaanId,
+                'penghasilan_rata_rata' => $row['penghasilan_rata_rata'] ?? null,
+                'alamat_ktp' => $row['alamat_ktp'] ?? null,
+                'alamat_domisili' => $row['alamat_domisili'] ?? null,
 
-            'pendidikan_id' => $pendidikanId,
-            'pekerjaan_id' => $pekerjaanId,
-            'no_hp' => $row[19],
-            'nik' => $row[20],
+                // Administrasi
+                'no_register' => $row['no_registrasi'] ?? null,
+                'no_bln' => $row['nobln'] ?? null,
+                'asal_pengajuan' => $row['asal_pengajuan'] ?? null,
+                'no_surat_pengajuan' => $row['no_surat_pengajuan'] ?? null,
+                'no_lkn' => $row['no_lkn'] ?? null,
+                'tgl_surat' => $parseDate($row['tgl_surat'] ?? null),
+                'tgl_berkas' => $parseDate($row['tgl_berkas'] ?? null),
+                'tgl_pelaksanaan' => $parseDate($row['tgl_pelaksanaan'] ?? null),
+                'tgl_tangkap' => $parseDate($row['tgl_tangkap'] ?? null),
 
-            // --- KOLOM BARU CASE CONFERENCE DIMULAI DARI SINI ---
-            'penghasilan_rata_rata' => $row[21],
+                // Perkara & Hukum
+                'narkotika_id' => $narkotikaId,
+                'berat_bb' => is_numeric($row['berat_bukti_gr'] ?? null) ? $row['berat_bukti_gr'] : null,
+                'deskripsi_bb' => $row['barang_bukti_deskripsi'] ?? null,
+                'pasal_sangkaan' => $row['pasal_yang_disangkakan'] ?? null,
+                'status_hukum' => $row['status_hukum'] ?? null,
+                'keterlibatan_jaringan' => $row['keterlibatan_jaringan'] ?? null,
+                'cara_mendapatkan' => $row['cara_mendapatkan'] ?? null,
+                'dapat_dari_siapa' => $row['dapat_dari_siapa'] ?? null,
 
-            // Aspek Perkara & Hukum
-            'narkotika_id' => $narkotikaId,
-            'berat_bb' => $row[23],
-            'pasal_sangkaan' => $row[24],
-            'status_hukum' => $row[25],
-            'keterlibatan_jaringan' => $row[26],
-            'cara_mendapatkan' => $row[27],
-            'dapat_dari' => $row[28],
+                // Medis & Psikososial
+                'kesehatan_fisik' => $row['kesehatan_fisik'] ?? null,
+                'psikologi' => $row['psikologi'] ?? null,
+                'tes_urine' => $row['hasil_tes_urine'] ?? null,
+                'tingkat_ketergantungan' => $row['tingkat_ketergantungan'] ?? null,
+                'pola_pemakaian' => $row['pola_pemakaian'] ?? null,
+                'alasan_penggunaan' => $row['alasan_penggunaan'] ?? null,
+                'kondisi_keluarga' => $row['kondisi_keluarga'] ?? null,
+                'kondisi_lingkungan' => $row['kondisi_lingkungan'] ?? null,
 
-            // Aspek Medis & Psikososial
-            'kesehatan' => $row[29],
-            'psikologi' => $row[30],
-            'tes_urine' => in_array(ucfirst(strtolower($row[31])), ['Positif', 'Negatif']) ? ucfirst(strtolower($row[31])) : null,
-            'alasan_penggunaan' => $row[32],
-            'kondisi_keluarga' => $row[33],
-            'tingkat_ketergantungan' => $row[34],
-            'pola_pemakaian' => $row[35],
-            'kondisi_lingkungan' => $row[36],
-
-            // Kesimpulan TAT
-            'hasil_asesmen_hukum' => $row[37],
-            'hasil_asesmen_medis' => $row[38],
-            'rekomendasi_id' => $rekomendasiId,
-            'pelaksanaan' => in_array(strtoupper($row[40]), ['YA', 'TIDAK']) ? strtoupper($row[40]) : null,
-            'keterangan' => $row[41],
-            'saran' => $row[42],
-        ]);
-    }
-
-    /**
-     * Helper untuk mengubah format tanggal dari Excel (yang biasanya berupa angka seri)
-     * menjadi format YYYY-MM-DD yang diterima MySQL.
-     */
-    private function transformDate($value, $format = 'Y-m-d')
-    {
-        if (empty($value))
-            return null;
-
-        try {
-            return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)->format($format);
-        } catch (\ErrorException $e) {
-            return \Carbon\Carbon::parse($value)->format($format);
-        }
+                // Hasil Asesmen & Case Conference
+                'hasil_asesmen_hukum' => $row['hasil_asesmen_hukum'] ?? null,
+                'hasil_asesmen_medis' => $row['hasil_asesmen_medis'] ?? null,
+                'rekomendasi_id' => $rekomendasiId,
+                'pelaksanaan' => strtoupper($row['pelaksanaan_rekomendasi_yatidak'] ?? 'TIDAK') === 'YA' ? 'YA' : 'TIDAK',
+                'keterangan_tambahan' => $row['keterangan_tambahan'] ?? null,
+                'saran_case_conference' => $row['saran_case_conference'] ?? null,
+            ]
+        );
     }
 }
