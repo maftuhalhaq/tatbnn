@@ -56,4 +56,25 @@ class Asesmen extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+    public function getStatusKelengkapanAttribute()
+    {
+        // Ambil semua kolom yang ada di tabel asesmens untuk data ini
+        $attributes = $this->getAttributes();
+
+        // Daftar kolom sistem yang tidak perlu dicek kelengkapannya
+        $exclude = ['id', 'created_at', 'updated_at', 'created_by'];
+
+        foreach ($attributes as $key => $value) {
+            if (!in_array($key, $exclude)) {
+                // Jika ditemukan satu saja nilai yang NULL atau string kosong ('')
+                // (Angka 0 tetap akan terhitung sebagai data yang sudah diisi)
+                if (is_null($value) || trim($value) === '') {
+                    return 'Data Belum Lengkap';
+                }
+            }
+        }
+
+        // Jika seluruh loop selesai dan tidak ada yang kosong
+        return 'Data Lengkap';
+    }
 }

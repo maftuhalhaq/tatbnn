@@ -58,6 +58,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/asesmen/{id}/pdf', [AsesmenController::class, 'pdf'])
         ->name('asesmen.pdf');
 
+    Route::get('/asesmen/{id}/rekomendasi/download-word', [AsesmenController::class, 'downloadWordTerpakai'])->name('asesmen.rekomendasi.downloadWord');
+
 });
 
 // 3. Route bawaan Laravel Breeze untuk autentikasi (Login, Register, Logout)

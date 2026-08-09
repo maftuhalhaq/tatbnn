@@ -42,19 +42,19 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Tanggal Surat</label>
-                            <input type="date" name="tgl_surat" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <input type="text" name="tgl_surat" class="datepicker-id mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Pilih Tanggal">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Tanggal Berkas Diterima</label>
-                            <input type="date" name="tgl_berkas" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <input type="text" name="tgl_berkas" class="datepicker-id mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Pilih Tanggal">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Tanggal Pelaksanaan</label>
-                            <input type="date" name="tgl_pelaksanaan" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <input type="text" name="tgl_pelaksanaan" class="datepicker-id mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Pilih Tanggal">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Tanggal Penangkapan</label>
-                            <input type="date" name="tgl_tangkap" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <input type="text" name="tgl_tangkap" class="datepicker-id mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Pilih Tanggal">
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Tanggal Lahir</label>
-                            <input type="date" name="tgl_lahir" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <input type="text" name="tgl_lahir" class="datepicker-id mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Pilih Tanggal">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Jenis Kelamin <span class="text-red-500">*</span></label>
@@ -92,33 +92,33 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Kewarganegaraan</label>
-                            <input type="text" name="kewarganegaraan" value="WNI" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <input type="text" name="kewarganegaraan" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Agama</label>
-                            <input type="text" name="agama" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <select name="agama" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                <option value="">-- Pilih Agama --</option>
+                                <option value="Islam">Islam</option>
+                                <option value="Kristen Protestan">Kristen Protestan</option>
+                                <option value="Katolik">Katolik</option>
+                                <option value="Hindu">Hindu</option>
+                                <option value="Buddha">Buddha</option>
+                                <option value="Konghucu">Konghucu</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Pendidikan</label>
-                            <select name="pendidikan_id" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                <option value="">-- Pilih Pendidikan --</option>
-                                @foreach($masterPendidikan as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama_pendidikan }}</option>
-                                @endforeach
-                            </select>
+                            <!-- DIPERBARUI: Menggunakan text input biasa -->
+                            <input type="text" name="pendidikan_input" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Pekerjaan</label>
-                            <select name="pekerjaan_id" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                <option value="">-- Pilih Pekerjaan --</option>
-                                @foreach($masterPekerjaan as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama_pekerjaan }}</option>
-                                @endforeach
-                            </select>
+                            <!-- DIPERBARUI: Menggunakan text input biasa -->
+                            <input type="text" name="pekerjaan_input" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Penghasilan Rata-Rata</label>
-                            <input type="text" name="penghasilan_rata_rata" placeholder="Misal: Rp 3.000.000" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <input type="text" name="penghasilan_rata_rata" id="penghasilan_rupiah" placeholder="Misal: Rp 3.000.000" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -176,11 +176,8 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Hasil Tes Urine</label>
-                            <select name="tes_urine" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                <option value="">-- Pilih Hasil --</option>
-                                <option value="Positif">Positif</option>
-                                <option value="Negatif">Negatif</option>
-                            </select>
+                            <!-- DIPERBARUI: Menggunakan text input biasa -->
+                            <input type="text" name="tes_urine" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         </div>
                     </div>
                 </div>
@@ -199,12 +196,8 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Rekomendasi TAT</label>
-                            <select name="rekomendasi_id" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                                <option value="">-- Pilih Rekomendasi --</option>
-                                @foreach($masterRekomendasi as $r)
-                                    <option value="{{ $r->id }}">{{ $r->tempat_rehabilitasi }}</option>
-                                @endforeach
-                            </select>
+                            <!-- DIPERBARUI: Menggunakan text input biasa -->
+                            <input type="text" name="rekomendasi_input" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Status Pelaksanaan Rekomendasi</label>
@@ -224,7 +217,7 @@
                 <div class="bg-blue-50 p-6 rounded-xl border border-blue-200 shadow-sm">
                     <h3 class="text-lg font-bold text-blue-900 mb-4 border-b border-blue-300 pb-2">5. Hasil Case Conference (Opsional saat daftar awal)</h3>
                     <p class="text-xs text-blue-700 mb-4">Bagian ini bisa dikosongkan saat pendaftaran awal dan diubah/diedit (Edit Data) setelah sidang Case Conference selesai.</p>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Analisis Aspek Hukum</label>
@@ -242,7 +235,7 @@
                             <label class="block text-sm font-medium text-slate-700">Kondisi Psikologi</label>
                             <textarea name="psikologi" rows="2" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
                         </div>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2">
                              <div>
                                 <label class="block text-sm font-medium text-slate-700">Alasan Penggunaan</label>
@@ -262,7 +255,7 @@
                             <label class="block text-sm font-medium text-slate-700">Pola Pemakaian</label>
                             <input type="text" name="pola_pemakaian" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         </div>
-                        
+
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700">Kondisi Lingkungan</label>
                             <textarea name="kondisi_lingkungan" rows="2" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
@@ -284,4 +277,37 @@
             </form>
         </div>
     </div>
+
+    <!-- Script JavaScript untuk Format Rupiah -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var penghasilanInput = document.getElementById('penghasilan_rupiah');
+
+            if (penghasilanInput) {
+                penghasilanInput.addEventListener('keyup', function(e) {
+                    this.value = formatRupiah(this.value, 'Rp. ');
+                });
+
+                if(penghasilanInput.value) {
+                    penghasilanInput.value = formatRupiah(penghasilanInput.value, 'Rp. ');
+                }
+            }
+
+            function formatRupiah(angka, prefix) {
+                var number_string = angka.replace(/[^,\d]/g, '').toString(),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    var separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+                return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+            }
+        });
+    </script>
 </x-app-layout>

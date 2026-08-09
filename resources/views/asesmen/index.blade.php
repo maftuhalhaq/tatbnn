@@ -53,7 +53,7 @@
             <!-- Filter & Pencarian -->
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
                 <form action="{{ route('asesmen.index') }}" method="GET" class="space-y-4">
-                    
+
                     <!-- Baris 1: Search Utama -->
                     <div class="flex flex-col sm:flex-row gap-3">
                         <div class="flex-1 relative">
@@ -68,7 +68,7 @@
 
                     <!-- Baris 2: Filter Lanjutan (Dropdowns) -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                        
+
                         <!-- Filter Bulan -->
                         <select name="bulan" class="w-full border-slate-300 rounded-lg text-sm text-slate-600 focus:border-blue-500 focus:ring-blue-500">
                             <option value="">-- Semua Bulan --</option>
@@ -118,7 +118,7 @@
 
                     <!-- Baris 3: Tombol Aksi -->
                     <div class="flex flex-col sm:flex-row justify-between items-center border-t border-slate-100 pt-4 mt-2 gap-3 sm:gap-0">
-                        
+
                         <!-- Kiri: Tombol Export Excel -->
                         <div class="w-full sm:w-auto">
                             <a href="{{ route('asesmen.export-excel', request()->all()) }}" class="inline-flex justify-center items-center w-full sm:w-auto px-4 py-2 border border-transparent text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 shadow-sm transition">
@@ -166,13 +166,29 @@
                                     <td class="px-6 py-4 text-sm text-slate-600">
                                         {{ $asesmens->firstItem() + $index }}
                                     </td>
-                                    
+
                                     <!-- Kolom Identitas -->
                                     <td class="px-6 py-4">
                                         <div class="font-bold text-slate-900 text-sm">{{ $item->nama_lengkap }}</div>
                                         <div class="text-xs text-slate-500 mt-0.5">NIK: {{ $item->nik ?? '-' }}</div>
                                         <div class="text-xs text-slate-400 mt-0.5">Reg: {{ $item->no_register ?? '-' }}</div>
+
+                                        <div class="mt-2">
+        @if($item->status_kelengkapan === 'Data Lengkap')
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                DATA LENGKAP
+            </span>
+        @else
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                DATA BELUM LENGKAP
+            </span>
+        @endif
+    </div>
+
                                     </td>
+
 
                                     <!-- Kolom Perkara & Hukum -->
                                     <td class="px-6 py-4">
@@ -196,25 +212,40 @@
 
                                     <!-- Kolom Medis & Rekomendasi -->
                                     <td class="px-6 py-4">
-                                        <div class="flex items-center gap-2 mb-1.5">
-                                            <span class="text-xs text-slate-500">Urine:</span>
-                                            @if($item->tes_urine == 'Positif')
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 uppercase">Positif</span>
-                                            @elseif($item->tes_urine == 'Negatif')
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase">Negatif</span>
-                                            @else
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 uppercase">N/A</span>
-                                            @endif
-                                        </div>
-                                        <div class="text-sm font-semibold text-blue-700 truncate max-w-[200px]" title="{{ $item->rekomendasi->tempat_rehabilitasi ?? 'Belum ada rekomendasi' }}">
-                                            {{ $item->rekomendasi->tempat_rehabilitasi ?? 'Belum ada rekomendasi' }}
-                                        </div>
-                                    </td>
+    <div class="text-sm text-slate-500 mb-1 flex items-center gap-2">
+        <span>Urine:</span>
+        @php
+            // Ambil data tes urine dari database
+            $urineText = $item->tes_urine ?? '';
+            // Ekstrak kata pertama. strtok akan memotong kalimat berdasarkan spasi, titik dua, atau koma.
+            $urineFirstWord = strtoupper(strtok($urineText, " :,-"));
+        @endphp
+
+        @if($urineFirstWord === 'POSITIF')
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">
+                POSITIF
+            </span>
+        @elseif($urineFirstWord === 'NEGATIF')
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                NEGATIF
+            </span>
+        @else
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600">
+                N/A
+            </span>
+        @endif
+    </div>
+
+    <!-- Bagian Rekomendasi TAT di bawah status Urine -->
+    <div class="text-sm font-bold text-blue-700">
+        {{ $item->rekomendasi_input ?? $item->rekomendasi->tempat_rehabilitasi ?? 'Belum ada rekomendasi' }}
+    </div>
+</td>
 
                                     <!-- Kolom Aksi -->
                                     <td class="px-4 py-3 text-sm text-center">
                                         <div class="flex items-center justify-center space-x-2">
-                                            
+
                                             <!-- 1. BARU: Tombol Berita Acara (Hijau) -->
                                             <a href="{{ route('asesmen.berita-acara', $item->id) }}" class="p-1.5 bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors" title="Buat Berita Acara">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">

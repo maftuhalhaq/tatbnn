@@ -83,10 +83,25 @@
                     <div><span class="text-slate-400 block text-xs">Cara Mendapatkan</span> <span class="font-semibold text-slate-800">{{ $asesmen->cara_mendapatkan ?? '-' }}</span></div>
                     <div><span class="text-slate-400 block text-xs">Dapat Dari Siapa</span> <span class="font-semibold text-slate-800">{{ $asesmen->dapat_dari_siapa ?? '-' }}</span></div>
                     <div>
-                        <span class="text-slate-400 block text-xs">Hasil Tes Urine</span> 
-                        <span class="inline-flex px-2 py-0.5 rounded text-xs font-bold {{ $asesmen->tes_urine == 'Positif' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700' }}">
-                            {{ $asesmen->tes_urine ?? '-' }}
-                        </span>
+                        <span class="text-slate-400 block text-xs mb-1">Hasil Tes Urine</span>
+                        @php
+                            $urineText = $asesmen->tes_urine ?? '';
+                            $urineFirstWord = strtoupper(strtok($urineText, " :,-"));
+                        @endphp
+
+                        @if($urineFirstWord === 'POSITIF')
+                            <span class="inline-flex px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-700">
+                                {{ $asesmen->tes_urine }}
+                            </span>
+                        @elseif($urineFirstWord === 'NEGATIF')
+                            <span class="inline-flex px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-700">
+                                {{ $asesmen->tes_urine }}
+                            </span>
+                        @else
+                            <span class="inline-flex px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-700">
+                                {{ $asesmen->tes_urine ?? '-' }}
+                            </span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -108,7 +123,7 @@
                     </div>
                     <div><span class="text-slate-400 block text-xs">Rekomendasi TAT</span> <span class="font-bold text-blue-600">{{ $asesmen->rekomendasi->tempat_rehabilitasi ?? '-' }}</span></div>
                     <div>
-                        <span class="text-slate-400 block text-xs">Status Pelaksanaan</span> 
+                        <span class="text-slate-400 block text-xs">Status Pelaksanaan</span>
                         <span class="font-bold {{ $asesmen->pelaksanaan == 'YA' ? 'text-emerald-600' : 'text-amber-600' }}">
                             {{ $asesmen->pelaksanaan == 'YA' ? 'Sudah Dilaksanakan (YA)' : 'Belum Dilaksanakan (TIDAK)' }}
                         </span>

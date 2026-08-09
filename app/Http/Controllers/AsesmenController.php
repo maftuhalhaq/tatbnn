@@ -618,4 +618,62 @@ class AsesmenController extends Controller
         $namaFile = 'Rekap_Asesmen_TAT_' . date('Ymd_His') . '.xlsx';
         return Excel::download(new AsesmenExport($request), $namaFile);
     }
+
+    /**
+     * Mengunduh Surat Rekomendasi Word langsung dari data Database yang tersimpan
+     */
+    public function downloadWordTerpakai(string $id)
+    {
+        $asesmen = Asesmen::with(['rekomendasi', 'narkotika'])->findOrFail($id);
+        $templatePath = storage_path('app/templates/template_rekomendasi.docx');
+
+        if (!file_exists($templatePath)) {
+            return redirect()->back()->with('error', 'Template Word tidak ditemukan.');
+        }
+
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor($templatePath);
+
+        // Mapping Data Administrasi Surat (Dari Database)
+        $templateProcessor->setValue('no_surat_rekomendasi', $asesmen->no_surat_rekomendasi ?? '-');
+        $templateProcessor->setValue('tgl_rekomendasi', $asesmen->tgl_rekomendasi ? \Carbon\Carbon::parse($asesmen->tgl_rekomendasi)->translatedFormat('d F Y') : '-');
+        $templateProcessor->setValue('kepada_yth', $asesmen->kepada_yth ?? '-');
+        $templateProcessor->setValue('no_keputusan', $asesmen->no_keputusan ?? '-');
+        $templateProcessor->setValue('tgl_keputusan', $asesmen->tgl_keputusan ? \Carbon\Carbon::parse($asesmen->tgl_keputusan)->translatedFormat('d F Y') : '-');
+        $templateProcessor->setValue('tentang_permohonan', $asesmen->tentang_permohonan ?? '-');
+        $templateProcessor->setValue('kewarganegaraan', $asesmen->kewarganegaraan ?? 'Indonesia (WNI)');
+        $templateProcessor->setValue('nama_narkotika', $asesmen->nama_narkotika_medis ?? '-');
+        $templateProcessor->setValue('keterangan_diagnosis', $asesmen->keterangan_diagnosis ?? '-');
+        $templateProcessor->setValue('lama_perawatan', $asesmen->lama_perawatan ?? '-');
+
+        // Mapping Data Klien
+        $templateProcessor->setValue('nama_lengkap', $asesmen->nama_lengkap);
+        $templateProcessor->setValue('nama_langkap', $asesmen->nama_lengkap);
+        $templateProcessor->setValue('nam_lengkap', $asesmen->nama_lengkap);
+        $templateProcessor->setValue('nik', $asesmen->nik);
+        $templateProcessor->setValue('tempat_lahir', $asesmen->tempat_lahir ?? '-');
+        $templateProcessor->setValue('tgl_lahir', $asesmen->tgl_lahir ? \Carbon\Carbon::parse($asesmen->tgl_lahir)->translatedFormat('d F Y') : '-');
+
+        $jk = $asesmen->jenis_kelamin == 'L' ? 'Laki-laki' : ($asesmen->jenis_kelamin == 'P' ? 'Perempuan' : '-');
+        $templateProcessor->setValue('jenis_kelamin', $jk);
+        $templateProcessor->setValue('alamat_ktp', $asesmen->alamat_ktp ?? '-');
+        $templateProcessor->setValue('alamat_domisili', $asesmen->alamat_domisili ?? '-');
+        $templateProcessor->setValue('no_surat_pengajuan', $asesmen->no_surat_pengajuan ?? '-');
+
+        $tgl_pelaksanaan = $asesmen->tgl_pelaksanaan ? \Carbon\Carbon::parse($asesmen->tgl_pelaksanaan)->translatedFormat('d F Y') : '-';
+        $hari_pelaksanaan = $asesmen->tgl_pelaksanaan ? \Carbon\Carbon::parse($asesmen->tgl_pelaksanaan)->translatedFormat('l') : '-';
+
+        $templateProcessor->setValue('tgl_pelaksanaan', $tgl_pelaksanaan);
+        $templateProcessor->setValue('tanggal_tat', $tgl_pelaksanaan);
+        $templateProcessor->setValue('hari', $hari_pelaksanaan);
+        $templateProcessor->setValue('jenis_narkotika', $asesmen->narkotika->jenis_narkotika ?? '-');
+        $templateProcessor->setValue('tingkat_ketergantungan', $asesmen->tingkat_ketergantungan ?? '-');
+        $templateProcessor->setValue('rekomendasi_tat', $asesmen->rekomendasi->tempat_rehabilitasi ?? '-');
+
+        // Proses Unduh
+        $fileName = 'Surat_Rekomendasi_TAT_' . str_replace(' ', '_', $asesmen->nama_lengkap) . '.docx';
+        $tempPath = storage_path('app/temp_' . $fileName);
+
+        $templateProcessor->saveAs($tempPath);
+        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
+    }
 }
