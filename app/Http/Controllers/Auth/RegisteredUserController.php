@@ -28,24 +28,25 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
+        event(new \Illuminate\Auth\Events\Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user); <--- HAPUS ATAU KOMENTARI BARIS INI AGAR TIDAK AUTO-LOGIN
 
-        return redirect(route('dashboard', absolute: false));
+        // Arahkan ke halaman menunggu persetujuan
+        return redirect()->route('approval.waiting');
     }
 }

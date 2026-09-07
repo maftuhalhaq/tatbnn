@@ -11,8 +11,10 @@ class Asesmen extends Model
     use HasFactory;
 
     // Mengizinkan semua kolom diisi secara massal kecuali kolom 'id'
+    // Otomatis mengizinkan penyimpanan 'foto_klien'
     protected $guarded = ['id'];
 
+    // Menentukan nama tabel secara eksplisit
     protected $table = 'asesmens';
 
     // Konfigurasi Primary Key UUID
@@ -31,7 +33,6 @@ class Asesmen extends Model
     }
 
     // --- Relasi BelongsTo ke Tabel Master ---
-
     public function pekerjaan()
     {
         return $this->belongsTo(Pekerjaan::class, 'pekerjaan_id');
@@ -56,19 +57,21 @@ class Asesmen extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    // --- Accessor: Mengecek Status Kelengkapan Data ---
     public function getStatusKelengkapanAttribute()
     {
         // Ambil semua kolom yang ada di tabel asesmens untuk data ini
         $attributes = $this->getAttributes();
 
         // Daftar kolom sistem yang tidak perlu dicek kelengkapannya
-        $exclude = ['id', 'created_at', 'updated_at', 'created_by'];
+        $exclude = ['id', 'created_at', 'updated_at', 'created_by', 'foto_klien'];
 
         foreach ($attributes as $key => $value) {
             if (!in_array($key, $exclude)) {
                 // Jika ditemukan satu saja nilai yang NULL atau string kosong ('')
                 // (Angka 0 tetap akan terhitung sebagai data yang sudah diisi)
-                if (is_null($value) || trim($value) === '') {
+                if (is_null($value) || trim((string)$value) === '') {
                     return 'Data Belum Lengkap';
                 }
             }
@@ -76,5 +79,11 @@ class Asesmen extends Model
 
         // Jika seluruh loop selesai dan tidak ada yang kosong
         return 'Data Lengkap';
+    }
+
+    // --- Relasi Many-to-Many ke Tim Medis & Tim Hukum ---
+    public function anggotaTim()
+    {
+        return $this->belongsToMany(MasterAnggota::class, 'asesmen_anggota', 'asesmen_id', 'master_anggota_id');
     }
 }
