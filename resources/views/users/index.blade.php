@@ -36,6 +36,9 @@
                                     @if($u->id === auth()->id())
                                         <span class="inline-block mt-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded">AKUN ANDA</span>
                                     @endif
+                                    @if($u->id === 1 || $u->email === 'admin@admin.com')
+                                        <span class="inline-block mt-1 px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] font-bold rounded">SUPER ADMIN</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-500">
                                     {{ $u->created_at->format('d M Y, H:i') }}
@@ -52,7 +55,7 @@
                                                 <option value="0" {{ !$u->is_approved ? 'selected' : '' }}>Ditolak / Menunggu</option>
                                             </select>
 
-                                            <!-- Pilih Role (Sudah ditambahkan Penginput Data) -->
+                                            <!-- Pilih Role -->
                                             <select name="role" class="text-xs rounded-lg border-slate-300 font-bold bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500">
                                                 <option value="admin" {{ $u->role === 'admin' ? 'selected' : '' }}>Admin (Full Akses)</option>
                                                 <option value="penginput_data" {{ $u->role === 'penginput_data' ? 'selected' : '' }}>Penginput Data</option>
@@ -62,18 +65,28 @@
                                             </select>
 
                                             <button type="submit" class="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition shadow-sm">
-                                                Simpan
-                                            </button>
-                                        </form>
+                                                    Simpan
+                                                </button>
+                                            </form>
 
-                                        <!-- Form Hapus Akun (Hanya muncul jika bukan akun admin yang sedang login) -->
-                                        @if($u->id !== auth()->id())
-                                        <form action="{{ route('users.destroy', $u->id) }}" method="POST" class="m-0" onsubmit="return confirm('Peringatan: Apakah Anda yakin ingin menghapus pengguna {{ $u->name }} secara permanen? Data yang sudah dihapus tidak dapat dikembalikan.');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="px-3 py-2 bg-white text-rose-600 border border-rose-200 text-xs font-bold rounded-lg hover:bg-rose-50 hover:text-rose-700 transition shadow-sm" title="Hapus Pengguna">
-                                                Hapus
-                                            </button>
-                                        </form>
+                                            <!-- TOMBOL EDIT PROFIL & SANDI (BARU DITAMBAHKAN) -->
+                                            <a href="{{ route('users.edit', $u->id) }}" class="px-3 py-2 bg-amber-50 text-amber-600 border border-amber-200 text-xs font-bold rounded-lg hover:bg-amber-100 hover:text-amber-700 transition shadow-sm">
+                                                Edit
+                                            </a>
+
+                                        <!-- Form Hapus Akun (Hanya muncul jika BUKAN akun yang sedang login, dan BUKAN Super Admin) -->
+                                        @if($u->id !== auth()->id() && $u->id !== 1 && $u->email !== 'admin@admin.com')
+                                            <form action="{{ route('users.destroy', $u->id) }}" method="POST" class="m-0" onsubmit="return confirm('Peringatan: Apakah Anda yakin ingin menghapus pengguna {{ $u->name }} secara permanen? Data yang sudah dihapus tidak dapat dikembalikan.');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="px-3 py-2 bg-white text-rose-600 border border-rose-200 text-xs font-bold rounded-lg hover:bg-rose-50 hover:text-rose-700 transition shadow-sm" title="Hapus Pengguna">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        @elseif($u->id === 1 || $u->email === 'admin@admin.com')
+                                            <!-- Badge Gembok untuk Super Admin -->
+                                            <span class="px-3 py-2 bg-slate-100 text-slate-400 border border-slate-200 text-[10px] uppercase tracking-wider font-bold rounded-lg flex items-center cursor-not-allowed shadow-sm" title="Akun Super Admin tidak bisa dihapus">
+                                                🔒 Permanen
+                                            </span>
                                         @endif
                                     </div>
                                 </td>

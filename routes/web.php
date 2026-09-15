@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\DashboardController;
@@ -79,12 +79,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/rekomendasi/{id}', [App\Http\Controllers\AsesmenController::class, 'destroyRekomendasi'])->name('rekomendasi.destroy');
 
 
-    // ==========================================
-    // ROUTE MANAJEMEN PENGGUNA (Khusus Admin)
-    // ==========================================
-    Route::get('/users', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
-    Route::patch('/users/{id}', [App\Http\Controllers\UserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{id}', [App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
+    // Route untuk Manajemen Pengguna
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+
+    // 1. Tambahkan Route Edit Ini (Yang menyebabkan error tadi)
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+
+    // 2. Tambahkan Route Update Ini (Untuk menyimpan perubahan sandi & profil)
+    Route::patch('/users/{id}', [UserController::class, 'update'])->name('users.update');
+
+    // Route Hapus (Mungkin ini sudah Anda miliki)
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
 });
 
 // 3. Route bawaan Laravel Breeze untuk autentikasi (Login, Register, Logout)

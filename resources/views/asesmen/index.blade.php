@@ -49,76 +49,99 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto bg-white p-2 rounded-xl border border-slate-100 shadow-sm">
-                        <a href="{{ route('asesmen.downloadTemplate') }}" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 bg-white border border-slate-200 rounded-lg font-semibold text-xs text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-all">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Unduh Template
-                        </a>
+                        <!-- DUA TOMBOL TEMPLATE BARU -->
+                        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                            <a href="{{ route('asesmen.downloadTemplate', ['type' => 'rekap']) }}" class="w-full sm:w-auto inline-flex justify-center items-center px-3 py-2 bg-emerald-50 border border-emerald-300 rounded-lg font-bold text-[11px] uppercase tracking-wider text-emerald-700 hover:bg-emerald-100 transition-all" title="Unduh Template Rekap TAT">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Template Rekap
+                            </a>
+                            <a href="{{ route('asesmen.downloadTemplate', ['type' => 'cc']) }}" class="w-full sm:w-auto inline-flex justify-center items-center px-3 py-2 bg-sky-50 border border-sky-300 rounded-lg font-bold text-[11px] uppercase tracking-wider text-sky-700 hover:bg-sky-100 transition-all" title="Unduh Template Case Conference">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Template Case Conf.
+                            </a>
+                        </div>
+
                         <div class="hidden sm:block w-px h-8 bg-slate-200"></div>
+                        
+                        <!-- TOMBOL IMPORT -->
                         <form action="{{ route('asesmen.import') }}" method="POST" enctype="multipart/form-data" class="w-full sm:w-auto flex items-center gap-2">
                             @csrf
-                            <input type="file" name="file_excel" accept=".xlsx, .xls, .csv" required class="block w-full text-sm text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
-                            <button type="submit" class="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700 transition">Import</button>
+                            <input type="file" name="file_excel" accept=".xlsx, .xls, .csv" required class="block w-full text-sm text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:uppercase file:tracking-wider file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                            <button type="submit" class="px-4 py-2 bg-slate-800 text-white text-[11px] uppercase tracking-wider font-bold rounded-lg hover:bg-slate-700 transition">Import</button>
                         </form>
                     </div>
                 </div>
             </div>
             @endcan
 
-            <!-- HEADER DAFTAR KLIEN & BLOK PENCARIAN -->
-            <div class="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6 mt-4">
-                <div class="shrink-0 lg:mt-3">
-                    <h2 class="text-xl font-bold text-slate-800">Daftar Klien TAT</h2>
-                    <p class="text-sm text-slate-500 mt-1">Total data ditemukan: <span class="font-bold text-indigo-600">{{ $asesmens->total() }}</span> klien</p>
-                </div>
+            <!-- ============================================== -->
+            <!-- 3. BOKS PENCARIAN & FILTER (UI/UX DIPERBAIKI) -->
+            <!-- ============================================== -->
+            <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+                <form action="{{ route('asesmen.index') }}" method="GET" class="flex flex-col xl:flex-row gap-5">
+                    
+                    <!-- Kolom Pencarian Teks -->
+                    <div class="flex-1">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Pencarian Data</label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <!-- PERBAIKAN: pl-3.5 agar ikon pas di tengah area kosong -->
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                            <!-- PERBAIKAN: pl-11 memberi ruang lega untuk ikon, py-2.5 menyeragamkan tinggi kotak -->
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Nama Klien, NIK, atau No. Register..." class="block w-full py-2.5 pl-11 pr-4 rounded-xl border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:text-sm bg-slate-50 focus:bg-white transition-all">
+                        </div>
+                    </div>
 
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm w-full lg:max-w-2xl xl:max-w-3xl">
-                    <form action="{{ route('asesmen.index') }}" method="GET" id="filterForm">
-                        @if(request()->has('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <div class="flex-1 relative">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>
-                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Nama Klien, NIK, atau No. Register..." class="block w-full pl-11 pr-3 py-3 border border-slate-300 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all shadow-sm">
-                            </div>
-                            <button type="submit" class="px-6 py-3 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition shadow-sm">Cari</button>
-                            <button type="button" onclick="toggleFilter()" class="px-5 py-3 bg-white border border-slate-300 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 transition shadow-sm flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
-                                Filter
-                                <svg id="filterIcon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                            </button>
+                    <!-- Kolom Filter Waktu (Tanggal, Bulan, Tahun) -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <!-- Filter Tanggal Harian -->
+                        <div class="w-full sm:w-auto">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tanggal</label>
+                            <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="block w-full py-2.5 px-3 rounded-xl border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:text-sm bg-slate-50 focus:bg-white transition-all">
                         </div>
-                        <div id="filterPanel" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0 opacity-0">
-                            <div class="pt-5 mt-5 border-t border-slate-100">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <select name="bulan" class="w-full border-slate-300 rounded-xl text-sm text-slate-600 focus:border-indigo-500 bg-slate-50">
-                                        <option value="">-- Bulan --</option>
-                                        @php $bulans = [1=>'Januari', 2=>'Februari', 3=>'Maret', 4=>'April', 5=>'Mei', 6=>'Juni', 7=>'Juli', 8=>'Agustus', 9=>'September', 10=>'Oktober', 11=>'November', 12=>'Desember']; @endphp
-                                        @foreach($bulans as $num => $name) <option value="{{ $num }}" {{ request('bulan') == $num ? 'selected' : '' }}>{{ $name }}</option> @endforeach
-                                    </select>
-                                    <select name="tahun" class="w-full border-slate-300 rounded-xl text-sm text-slate-600 focus:border-indigo-500 bg-slate-50">
-                                        <option value="">-- Tahun --</option>
-                                        @foreach($daftarTahun ?? [] as $thn) <option value="{{ $thn }}" {{ request('tahun') == $thn ? 'selected' : '' }}>{{ $thn }}</option> @endforeach
-                                    </select>
-                                    <select name="narkotika" class="w-full border-slate-300 rounded-xl text-sm text-slate-600 focus:border-indigo-500 bg-slate-50">
-                                        <option value="">-- Jenis Zat/Narkotika --</option>
-                                        @foreach($masterNarkotika ?? [] as $n) <option value="{{ $n->id }}" {{ request('narkotika') == $n->id ? 'selected' : '' }}>{{ $n->jenis_narkotika }}</option> @endforeach
-                                    </select>
-                                    <select name="status" class="w-full border-slate-300 rounded-xl text-sm text-slate-600 focus:border-indigo-500 bg-slate-50">
-                                        <option value="">-- Status TAT --</option>
-                                        <option value="YA" {{ request('status') == 'YA' ? 'selected' : '' }}>Selesai</option>
-                                        <option value="TIDAK" {{ request('status') == 'TIDAK' ? 'selected' : '' }}>Menunggu</option>
-                                    </select>
-                                </div>
-                                <div class="flex justify-end gap-3 mt-4">
-                                    @if(request()->hasAny(['bulan', 'tahun', 'narkotika', 'status', 'search'])) <a href="{{ route('asesmen.index', ['sort' => request('sort')]) }}" class="px-5 py-2 text-sm font-bold text-slate-500 hover:text-slate-800">Bersihkan Filter</a> @endif
-                                    <button type="submit" class="px-5 py-2 bg-indigo-100 text-indigo-700 text-sm font-bold rounded-lg hover:bg-indigo-200">Terapkan Filter</button>
-                                </div>
-                            </div>
+
+                        <!-- Filter Bulan -->
+                        <div class="w-full sm:w-auto">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Bulan</label>
+                            <select name="bulan" class="block w-full py-2.5 px-3 rounded-xl border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:text-sm bg-slate-50 focus:bg-white transition-all custom-select-scroll">
+                                <option value="">-- Semua Bulan --</option>
+                                @foreach(['01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Mei','06'=>'Juni','07'=>'Juli','08'=>'Agustus','09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'] as $num => $name)
+                                    <option value="{{ $num }}" {{ request('bulan') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                    </form>
-                </div>
+
+                        <!-- Filter Tahun -->
+                        <div class="w-full sm:w-auto">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tahun</label>
+                            <select name="tahun" class="block w-full py-2.5 px-3 rounded-xl border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:text-sm bg-slate-50 focus:bg-white transition-all custom-select-scroll">
+                                <option value="">-- Semua Tahun --</option>
+                                @foreach($tahunTersedia as $thn)
+                                    <option value="{{ $thn }}" {{ request('tahun') == $thn ? 'selected' : '' }}>{{ $thn }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Aksi -->
+                    <div class="flex items-end gap-2 mt-4 xl:mt-0">
+                        <!-- PERBAIKAN: py-2.5 agar tinggi tombol sejajar sempurna dengan input text -->
+                        <button type="submit" class="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 hover:-translate-y-0.5 shadow-sm hover:shadow transition-all flex items-center justify-center">
+                            Filter Waktu
+                        </button>
+                        @if(request()->hasAny(['search', 'tanggal', 'bulan', 'tahun']))
+                            <a href="{{ route('asesmen.index') }}" class="w-full sm:w-auto px-4 py-2.5 bg-rose-50 text-rose-600 text-sm font-bold rounded-xl hover:bg-rose-100 hover:text-rose-700 border border-rose-200 transition-all flex items-center justify-center" title="Hapus semua filter">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
+                </form>
             </div>
 
-            <!-- 4. TABEL DATA (DENGAN 4 TOMBOL EXPORT EXCEL) -->
+            <!-- ============================================== -->
+            <!-- 4. TABEL DATA (DENGAN TOMBOL EXPORT)           -->
+            <!-- ============================================== -->
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-slate-200">
                 <div class="p-4 sm:p-5 border-b border-slate-200 bg-slate-50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
                     <div>

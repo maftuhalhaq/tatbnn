@@ -20,31 +20,61 @@ class UserController extends Controller
         return view('users.index', compact('users'));
     }
 
-    public function update(Request $request, string $id)
+    public function edit($id)
     {
-        if (!Gate::allows('is-admin')) {
-            abort(403, 'Akses Ditolak.');
+        // Hanya Admin Utama yang bisa mengakses
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Akses ditolak.');
         }
-
-        // PERBAIKAN VALIDASI: Menambahkan 'penginput_data' ke daftar yang diizinkan
-        $request->validate([
-            'role' => 'required|in:admin,penginput_data,pengedit_ba,pengedit_rekom,read_only',
-            'is_approved' => 'required|boolean',
-        ]);
 
         $user = User::findOrFail($id);
+        return view('users.edit', compact('user'));
+    }
 
-        // Mencegah admin menghapus hak akses dirinya sendiri
-        if ($user->id === auth()->id() && $request->role !== 'admin') {
-            return redirect()->back()->with('error', 'Anda tidak dapat mengubah role Admin Anda sendiri!');
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // =========================================================
+        // SKENARIO 1: Update dari halaman Edit (Nama, Email, Password)
+        // =========================================================
+        if ($request->has('name') && $request->has('email')) {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+                'password' => 'nullable|string|min:8', // Opsional, hanya divalidasi jika diisi
+            ]);
+
+            $user->name = $request->name;
+            $user->email = $request->email;
+
+            // Jika form password diisi, enkripsi dan simpan password baru
+            if ($request->filled('password')) {
+                $user->password = bcrypt($request->password);
+            }
+
+            $user->save();
+            return redirect()->route('users.index')->with('success', 'Profil dan Sandi petugas ' . $user->name . ' berhasil diperbarui.');
         }
 
-        $user->update([
-            'role' => $request->role,
-            'is_approved' => $request->is_approved,
-        ]);
+        // =========================================================
+        // SKENARIO 2: Update dari halaman Index (Role & Status Approval)
+        // =========================================================
+        if ($request->has('role') && $request->has('is_approved')) {
 
-        return redirect()->route('users.index')->with('success', 'Status dan Role pengguna berhasil diperbarui!');
+            // Cegah modifikasi role/akses pada akun Admin Utama (Super Admin)
+            if ($user->id === 1 || $user->email === 'admin@admin.com') {
+                return redirect()->back()->with('error', 'Akses Ditolak! Hak akses Admin Utama bersifat permanen dan tidak dapat diubah.');
+            }
+
+            $user->role = $request->role;
+            $user->is_approved = $request->is_approved;
+            $user->save();
+
+            return redirect()->back()->with('success', 'Hak akses petugas berhasil diperbarui.');
+        }
+
+        return redirect()->back();
     }
 
     public function destroy(string $id)

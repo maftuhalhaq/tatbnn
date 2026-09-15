@@ -8,17 +8,21 @@
         .autosave-active {
             animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
+        /* Custom scrollbar untuk dropdown */
+        .custom-select-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-select-scroll::-webkit-scrollbar-track { background: #f8fafc; border-radius: 8px; }
+        .custom-select-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        .custom-select-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 
     <div class="py-8 sm:py-10 bg-slate-50/50 min-h-screen">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
             <!-- ========================================== -->
-            <!-- 1. HEADER (SEAMLESS HERO) -->
+            <!-- 1. HEADER -->
             <!-- ========================================== -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <!-- Tombol Kembali ke Detail -->
                     <a href="{{ route('asesmen.show', $asesmen->id) }}" class="p-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-emerald-600 transition-colors shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     </a>
@@ -28,15 +32,11 @@
                         </div>
                         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight flex items-center gap-3">
                             Berita Acara: {{ $asesmen->nama_lengkap }}
-                            <!-- INDIKATOR AUTOSAVE -->
                             <span id="autosaveIndicator" class="hidden text-[10px] font-bold text-emerald-600 bg-emerald-100 border border-emerald-200 px-2 py-1 rounded-md uppercase tracking-wider autosave-active">
                                 Draft Tersimpan
                             </span>
                         </h1>
                     </div>
-                </div>
-                <div class="text-sm text-slate-500 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm hidden md:block">
-                    Isi dan lengkapi data untuk mencetak <span class="font-bold text-slate-700">Berita Acara TAT</span>.
                 </div>
             </div>
 
@@ -62,6 +62,10 @@
                         <div>
                             <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Tanggal Rapat (BA)</label>
                             <input type="text" name="tgl_ba" value="{{ old('tgl_ba', $asesmen->tgl_ba ? \Carbon\Carbon::parse($asesmen->tgl_ba)->format('Y-m-d') : '') }}" class="datepicker-id block w-full rounded-xl border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 sm:text-sm transition-all bg-slate-50 focus:bg-white" placeholder="Pilih Tanggal">
+                        </div>
+                        <div>
+                            <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Tanggal Pelaksanaan Asesmen</label>
+                            <input type="text" name="tgl_asesmen" value="{{ old('tgl_asesmen', $asesmen->tgl_asesmen ? \Carbon\Carbon::parse($asesmen->tgl_asesmen)->format('Y-m-d') : '') }}" class="datepicker-id block w-full rounded-xl border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 sm:text-sm transition-all bg-slate-50 focus:bg-white" placeholder="Pilih Tanggal Pelaksanaan Asesmen">
                         </div>
                         <div>
                             <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Nama Ketua TAT</label>
@@ -215,25 +219,45 @@
                                 <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Tanggal SK Narkoba</label>
                                 <input type="text" name="alat_bukti_tgl_sk" value="{{ old('alat_bukti_tgl_sk', $asesmen->alat_bukti_tgl_sk ? \Carbon\Carbon::parse($asesmen->alat_bukti_tgl_sk)->format('Y-m-d') : '') }}" class="datepicker-id block w-full rounded-xl border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 sm:text-sm transition-all bg-slate-50 focus:bg-white" placeholder="Pilih Tanggal">
                             </div>
+                            
+                            <!-- PERBAIKAN: Dokter Pemeriksa Diambil Dari Semua Data Master Medis -->
                             <div>
                                 <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Nama Dokter Pemeriksa</label>
                                 <select id="select-dokter-pemeriksa" name="alat_bukti_dokter" class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 sm:text-sm bg-white cursor-pointer transition-all">
-                                    <option value="{{ $asesmen->alat_bukti_dokter ?? '' }}">{{ $asesmen->alat_bukti_dokter ?? '-- Pilih dari Tim Medis --' }}</option>
+                                    <option value="">-- Pilih Dokter Pemeriksa --</option>
                                 </select>
-                                <p class="text-[10px] text-slate-500 mt-1">Otomatis ditarik dari Susunan Tim Medis di atas.</p>
+                                <p class="text-[10px] text-slate-500 mt-1">Pilih dari seluruh data dokter yang terdaftar di sistem.</p>
                             </div>
-                            <div class="row-span-2">
-                                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Hasil Zat Positif</label>
-                                <div class="p-4 border border-slate-200 rounded-xl bg-white shadow-sm">
-                                    <div id="container-zat" class="space-y-1.5 mb-4 max-h-40 overflow-y-auto pr-2">
-                                        <!-- Render Checkbox Zat Positif JS -->
+                            
+                            <!-- LOGIKA CERDAS: DETEKSI KATA POSITIF/NEGATIF DARI KALIMAT -->
+                            @php
+                                $savedUrine = old('tes_urine', $asesmen->tes_urine ?? '');
+                                $isPositif = stripos($savedUrine, 'positif') !== false;
+                                $isNegatif = stripos($savedUrine, 'negatif') !== false;
+                            @endphp
+
+                            <div>
+                                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Hasil Tes Urine</label>
+                                <select id="tes_urine_ba" name="tes_urine" class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 sm:text-sm bg-white cursor-pointer transition-all" onchange="toggleZatBukti()">
+                                    <option value="">-- Pilih Hasil Urine --</option>
+                                    <option value="POSITIF" {{ $isPositif ? 'selected' : '' }}>POSITIF</option>
+                                    <option value="NEGATIF" {{ $isNegatif ? 'selected' : '' }}>NEGATIF</option>
+                                </select>
+                            </div>
+
+                            <div class="row-span-2 md:col-span-2">
+                                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Pilih Zat Narkotika <span class="text-slate-400 font-medium normal-case">(Tampil sbg: POSITIF Zat A DAN Zat B)</span></label>
+                                <div class="p-4 border border-slate-200 rounded-xl bg-white shadow-sm transition-all" id="box-zat-bukti">
+                                    <div id="container-zat-alat-bukti" class="space-y-2 mb-4 max-h-48 overflow-y-auto pr-2 custom-select-scroll">
+                                        <!-- Render Checkbox Alat Bukti JS -->
                                     </div>
                                     <div class="flex gap-2 pt-3 border-t border-slate-100">
-                                        <button type="button" onclick="bukaModalOpsi('zat')" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-emerald-100 transition shadow-sm">+ Tambah Zat</button>
-                                        <button type="button" onclick="bukaKelolaOpsi('zat')" class="px-3 py-1.5 bg-slate-100 text-slate-600 text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-slate-200 transition shadow-sm">Kelola</button>
+                                        <button type="button" id="btnTambahZatBukti" onclick="bukaModalOpsi('zat_bukti')" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-emerald-100 transition shadow-sm">+ Tambah Zat</button>
+                                        <button type="button" onclick="bukaKelolaOpsi('zat_bukti')" class="px-3 py-1.5 bg-slate-100 text-slate-600 text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-slate-200 transition shadow-sm">Kelola</button>
                                     </div>
                                 </div>
                                 <input type="hidden" name="alat_bukti_hasil" id="alat_bukti_hasil_input" value="{{ old('alat_bukti_hasil', $asesmen->alat_bukti_hasil) }}">
+                                <p class="text-[10px] text-slate-500 mt-2 font-medium italic">Preview Output Word: <span id="preview_alat_bukti_hasil" class="text-rose-600 font-bold">{{ old('alat_bukti_hasil', $asesmen->alat_bukti_hasil) }}</span></p>
                             </div>
                         </div>
                     </div>
@@ -244,11 +268,23 @@
                             <span class="bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded">B</span> Kesimpulan Diagnostik TAT
                         </h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            
+                            <!-- CHECKBOX KESIMPULAN JENIS ZAT (TERKONEKSI DENGAN REKOMENDASI) -->
                             <div class="md:col-span-2">
-                                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Jenis Zat yang Dipakai</label>
-                                <textarea id="kesimpulan_jenis_zat_input" name="kesimpulan_jenis_zat" rows="2" class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:text-sm bg-slate-100 cursor-not-allowed text-slate-600 font-bold" readonly>{{ old('kesimpulan_jenis_zat', $asesmen->kesimpulan_jenis_zat) }}</textarea>
-                                <p class="text-[10px] text-slate-500 mt-1">Otomatis terisi dari centangan Hasil Zat Positif di atas.</p>
+                                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Jenis Zat yang Dipakai <span class="text-slate-400 font-medium normal-case">(Tampil murni: Zat A, Zat B)</span></label>
+                                <div class="p-4 border border-slate-200 rounded-xl bg-white shadow-sm">
+                                    <div id="container-zat-kesimpulan" class="mb-4 max-h-48 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 gap-2 custom-select-scroll">
+                                        <!-- Render Checkbox Kesimpulan JS -->
+                                    </div>
+                                    <div class="flex gap-2 pt-3 border-t border-slate-100">
+                                        <button type="button" onclick="bukaModalOpsi('zat_kesimpulan')" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-indigo-100 transition shadow-sm">+ Tambah Zat</button>
+                                        <button type="button" onclick="bukaKelolaOpsi('zat_kesimpulan')" class="px-3 py-1.5 bg-slate-100 text-slate-600 text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-slate-200 transition shadow-sm">Kelola</button>
+                                    </div>
+                                </div>
+                                <!-- Input tersembunyi yang ditarik oleh Laravel -->
+                                <input type="hidden" id="kesimpulan_jenis_zat_input" name="kesimpulan_jenis_zat" value="{{ old('kesimpulan_jenis_zat', $asesmen->kesimpulan_jenis_zat) }}">
                             </div>
+
                             <div>
                                 <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Status Klien</label>
                                 <select name="status_klien" class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:text-sm bg-white transition-all">
@@ -333,7 +369,6 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                                     </div>
                                 </div>
-                                <!-- Input tersembunyi ini yang dikirim ke controller, MENGGUNAKAN $tempatBersih murni -->
                                 <input type="hidden" name="rekomendasi_tempat_rehab" value="{{ $tempatBersih }}">
                                 <p class="text-[10px] text-slate-500 mt-1.5 italic">Terkunci. Data ini otomatis ditarik dari form pendaftaran awal (Edit Klien).</p>
                             </div>
@@ -357,13 +392,12 @@
                                             @endif
                                         @endforeach
                                     </select>
-                                    <!-- Key storage 'lama_perawatan' menyatukan opsi form ini dengan form Rekomendasi -->
                                     <button type="button" onclick="openTambahModal('rekomendasi_durasi', 'Lama (Durasi) Rawat', 'lama_perawatan')" class="px-3 py-2.5 bg-emerald-50 text-emerald-700 rounded-lg text-[11px] font-bold hover:bg-emerald-100 transition shadow-sm whitespace-nowrap">+ TAMBAH</button>
                                     <button type="button" onclick="openKelolaModal('rekomendasi_durasi', 'Lama (Durasi) Rawat', 'lama_perawatan')" class="px-3 py-2.5 bg-slate-100 text-slate-600 rounded-lg text-[11px] font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap">KELOLA</button>
                                 </div>
                             </div>
 
-                            <!-- KETERANGAN HUKUM REKOMENDASI (DYNAMIC & SYNCED) -->
+                            <!-- KETERANGAN HUKUM REKOMENDASI -->
                             <div class="md:col-span-2">
                                 <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Keterangan Hukum Rekomendasi</label>
                                 <div class="flex gap-2 items-center">
@@ -413,7 +447,7 @@
     <!-- MODALS (ANGGOTA TAT, OPSI, & MODAL DINAMIS)-->
     <!-- ========================================== -->
 
-    <!-- Modal Tambah Opsi Dinamis -->
+    <!-- Modal Tambah Durasi/Keterangan -->
     <div id="modalTambahDurasi" class="fixed inset-0 z-[80] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeTambahModal()"></div>
         <div class="fixed inset-0 z-10 overflow-y-auto">
@@ -434,7 +468,7 @@
         </div>
     </div>
 
-    <!-- Modal Kelola Opsi Dinamis -->
+    <!-- Modal Kelola Durasi/Keterangan -->
     <div id="modalKelolaDurasi" class="fixed inset-0 z-[80] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeKelolaModal()"></div>
         <div class="fixed inset-0 z-10 overflow-y-auto">
@@ -446,7 +480,7 @@
                             <button onclick="closeKelolaModal()" class="text-slate-400 hover:text-rose-500 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                         </div>
                         <input type="hidden" id="kelola_target_id">
-                        <ul id="kelola_list" class="space-y-2 max-h-[40vh] overflow-y-auto pr-2"></ul>
+                        <ul id="kelola_list" class="space-y-2 max-h-[40vh] overflow-y-auto pr-2 custom-select-scroll"></ul>
                     </div>
                     <div class="bg-slate-50 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 border-t border-slate-100">
                         <button type="button" onclick="closeKelolaModal()" class="w-full inline-flex justify-center rounded-lg border border-transparent bg-slate-200 px-6 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-300 sm:w-auto transition-colors">Tutup Kelola</button>
@@ -456,6 +490,7 @@
         </div>
     </div>
 
+    <!-- Modal Tambah Anggota -->
     <div id="modalTambahAnggota" class="fixed inset-0 z-[60] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8">
             <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-5">
@@ -476,19 +511,21 @@
         </div>
     </div>
 
+    <!-- Modal Kelola Anggota -->
     <div id="modalKelolaAnggota" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 sm:p-8 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-4">
                 <h3 class="text-lg font-extrabold text-slate-900" id="kelolaTitle">Kelola Anggota</h3>
                 <button type="button" onclick="tutupKelola()" class="text-slate-400 hover:text-rose-500 p-1 transition-colors">&times;</button>
             </div>
-            <div class="overflow-y-auto flex-1 pr-2 space-y-2" id="kelolaList"></div>
+            <div class="overflow-y-auto flex-1 pr-2 space-y-2 custom-select-scroll" id="kelolaList"></div>
             <div class="mt-5 pt-4 border-t border-slate-100 text-right">
                 <button type="button" onclick="tutupKelola()" class="px-6 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-200 transition">Tutup Kelola</button>
             </div>
         </div>
     </div>
 
+    <!-- Modal Tambah Opsi Master (Zat & Diagnosis) -->
     <div id="modalTambahOpsi" class="fixed inset-0 z-[70] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 sm:p-8">
             <h3 class="text-lg font-extrabold text-slate-900 mb-5 border-b border-slate-100 pb-3" id="modalOpsiTitle">Tambah Data Baru</h3>
@@ -502,13 +539,14 @@
         </div>
     </div>
 
+    <!-- Modal Kelola Opsi Master (Zat & Diagnosis) -->
     <div id="modalKelolaOpsi" class="fixed inset-0 z-[65] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 sm:p-8 flex flex-col max-h-[80vh]">
             <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-4">
                 <h3 class="text-lg font-extrabold text-slate-900" id="kelolaOpsiTitle">Kelola Opsi</h3>
                 <button type="button" onclick="document.getElementById('modalKelolaOpsi').classList.add('hidden')" class="text-slate-400 hover:text-rose-500 p-1 transition-colors">&times;</button>
             </div>
-            <div class="overflow-y-auto flex-1 space-y-2" id="kelolaOpsiList"></div>
+            <div class="overflow-y-auto flex-1 space-y-2 custom-select-scroll" id="kelolaOpsiList"></div>
             <div class="mt-5 pt-4 border-t border-slate-100 text-right">
                 <button type="button" onclick="document.getElementById('modalKelolaOpsi').classList.add('hidden')" class="px-6 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-200 transition">Tutup Kelola</button>
             </div>
@@ -516,10 +554,10 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- JAVASCRIPT LOGIC (Fungsionalitas 100% Utuh) -->
+    <!-- JAVASCRIPT LOGIC -->
     <!-- ========================================== -->
     <script>
-        // === FUNGSI SINKRONISASI DROPDOWN & AUTOSAVE LENGKAP ===
+        // === SINKRONISASI DROPDOWN UMUM (Kecuali Zat) ===
         let currentStorageKey = null;
 
         function openTambahModal(selectId, labelName, storageKey = null) {
@@ -540,7 +578,6 @@
             const newValue = document.getElementById('tambah_input').value.trim();
 
             if(newValue !== '') {
-                // Tambahkan opsi ke semua elemen durasi (jika yang ditambah adalah durasi)
                 let els = [];
                 if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi') {
                     if(document.getElementById('lama_perawatan')) els.push(document.getElementById('lama_perawatan'));
@@ -556,7 +593,6 @@
                     el.value = newValue;
                 });
 
-                // Simpan opsi ke local storage
                 let keyToSave = currentStorageKey || selectId;
                 let savedOpts = JSON.parse(localStorage.getItem('opsi_' + keyToSave)) || [];
                 if (!savedOpts.includes(newValue)) {
@@ -564,7 +600,6 @@
                     localStorage.setItem('opsi_' + keyToSave, JSON.stringify(savedOpts));
                 }
 
-                // SINKRONISASI VALUE TERPILIH ANTAR HALAMAN
                 if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi' || currentStorageKey === 'lama_perawatan') {
                     localStorage.setItem('shared_durasi_rawat_{{ $asesmen->id }}', newValue);
                 }
@@ -609,7 +644,6 @@
         }
 
         function hapusOpsiLokal(selectId, valueToRemove, btnEl) {
-            // Hapus dari semua form durasi yang ada di halaman ini
             let els = [];
             if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi') {
                 if(document.getElementById('lama_perawatan')) els.push(document.getElementById('lama_perawatan'));
@@ -627,7 +661,6 @@
                 }
             });
 
-            // Hapus dari local storage
             let keyToSave = currentStorageKey || selectId;
             let savedOpts = JSON.parse(localStorage.getItem('opsi_' + keyToSave)) || [];
             savedOpts = savedOpts.filter(item => item !== valueToRemove);
@@ -646,8 +679,7 @@
         }
 
         function loadSemuaOpsiLokal() {
-            // DITAMBAHKAN rekomendasi_keterangan UNTUK SINKRONISASI
-            const selectIds = ['kepada_yth', 'no_keputusan', 'tentang_permohonan', 'nama_narkotika_medis', 'keterangan_diagnosis', 'rekomendasi_keterangan'];
+            const selectIds = ['kepada_yth', 'no_keputusan', 'tentang_permohonan', 'keterangan_diagnosis'];
             selectIds.forEach(id => {
                 let savedOpts = JSON.parse(localStorage.getItem('opsi_' + id)) || [];
                 const selectEl = document.getElementById(id);
@@ -657,6 +689,31 @@
                     });
                 }
             });
+
+            // Khusus untuk Sinkronisasi Nama Narkotika Medis
+            let savedZat = JSON.parse(localStorage.getItem('shared_master_zat_narkotika'));
+            if (!savedZat) {
+                savedZat = [
+                    "Amphetamine (Amfetamin)",
+                    "Methamphetamine (Metamfetamin)",
+                    "Tetrahydrocannabinol",
+                    "Benzodiazepines (Benzodiazepin)"
+                ];
+                localStorage.setItem('shared_master_zat_narkotika', JSON.stringify(savedZat));
+            }
+            const selectNarkotika = document.getElementById('nama_narkotika_medis');
+            if(selectNarkotika) {
+                savedZat.forEach(val => {
+                    if (!Array.from(selectNarkotika.options).some(opt => opt.value === val)) {
+                        selectNarkotika.add(new Option(val, val));
+                    }
+                });
+                let currentNarkotika = "{{ old('nama_narkotika_medis', $asesmen->nama_narkotika_medis) }}";
+                if (currentNarkotika && !Array.from(selectNarkotika.options).some(opt => opt.value === currentNarkotika)) {
+                    selectNarkotika.add(new Option(currentNarkotika, currentNarkotika));
+                }
+                if(currentNarkotika) selectNarkotika.value = currentNarkotika;
+            }
         }
 
         function syncDurasiRawat() {
@@ -664,7 +721,6 @@
             if(document.getElementById('lama_perawatan')) els.push(document.getElementById('lama_perawatan'));
             if(document.getElementById('rekomendasi_durasi')) els.push(document.getElementById('rekomendasi_durasi'));
 
-            // Load opsi kustom ke semua dropdown durasi
             let savedDurasiOpts = JSON.parse(localStorage.getItem('opsi_lama_perawatan')) || [];
             els.forEach(select => {
                 savedDurasiOpts.forEach(val => {
@@ -674,7 +730,6 @@
                 });
             });
 
-            // Ganti isian dengan nilai yang terakhir kali dipilih (SINKRON ANTAR HALAMAN)
             let sharedDurasi = localStorage.getItem('shared_durasi_rawat_{{ $asesmen->id }}');
             if (sharedDurasi) {
                 els.forEach(select => {
@@ -685,7 +740,6 @@
                 });
             }
 
-            // Event Listener agar setiap perubahan tersimpan ke shared value
             els.forEach(select => {
                 select.addEventListener('change', function() {
                     localStorage.setItem('shared_durasi_rawat_{{ $asesmen->id }}', this.value);
@@ -703,7 +757,7 @@
         }
 
 
-        // === 1. FITUR DRAF OTOMATIS NARASI ===
+        // === FITUR DRAF OTOMATIS NARASI ===
         let klien = @json($klienData);
         let hasSavedMedis = "{{ $asesmen->narasi_medis ? 'yes' : 'no' }}";
         let hasSavedHukum = "{{ $asesmen->narasi_hukum ? 'yes' : 'no' }}";
@@ -711,31 +765,20 @@
         function getDraftMedis() {
             let alamatType = document.querySelector('input[name="alamat_medis"]:checked').value;
             let alamatTeks = "";
-
-            if (alamatType === 'ktp') {
-                alamatTeks = klien.alamat_ktp;
-            } else if (alamatType === 'domisili') {
-                alamatTeks = klien.alamat_domisili;
-            } else {
-                alamatTeks = `Sesuai KTP di ${klien.alamat_ktp} dan Domisili saat ini di ${klien.alamat_domisili}`;
-            }
+            if (alamatType === 'ktp') { alamatTeks = klien.alamat_ktp; } 
+            else if (alamatType === 'domisili') { alamatTeks = klien.alamat_domisili; } 
+            else { alamatTeks = `Sesuai KTP di ${klien.alamat_ktp} dan Domisili saat ini di ${klien.alamat_domisili}`; }
 
             return `Bahwa klien bernama ${klien.nama} Usia ${klien.usia} (Lahir di ${klien.tempat_lahir}, ${klien.tgl_lahir}). Pendidikan Terakhir ${klien.pendidikan}. Alamat Tempat Tinggal ${alamatTeks}.\n\n(Lanjutkan mengetik kronologi medis klien di sini...)`;
         }
         function getDraftHukum() {
             let alamatType = document.querySelector('input[name="alamat_hukum"]:checked').value;
             let alamatTeks = "";
-
-            if (alamatType === 'ktp') {
-                alamatTeks = klien.alamat_ktp;
-            } else if (alamatType === 'domisili') {
-                alamatTeks = klien.alamat_domisili;
-            } else {
-                alamatTeks = `Sesuai KTP di ${klien.alamat_ktp} dan Domisili saat ini di ${klien.alamat_domisili}`;
-            }
+            if (alamatType === 'ktp') { alamatTeks = klien.alamat_ktp; } 
+            else if (alamatType === 'domisili') { alamatTeks = klien.alamat_domisili; } 
+            else { alamatTeks = `Sesuai KTP di ${klien.alamat_ktp} dan Domisili saat ini di ${klien.alamat_domisili}`; }
 
             let pekerjaan = document.getElementById('input_pekerjaan_hukum').value || '-';
-
             return `Bahwa Tersangka bernama lengkap ${klien.nama}, NIK ${klien.nik}, Tempat/Tanggal Lahir ${klien.tempat_lahir}, ${klien.tgl_lahir}, Jenis Kelamin ${klien.jk}, Agama ${klien.agama}, Pekerjaan ${pekerjaan}, Pendidikan Terakhir ${klien.pendidikan}, Alamat Tempat Tinggal ${alamatTeks}.\n\nTersangka diamankan oleh petugas pada... (Lanjutkan mengetik kronologi penangkapan di sini...)`;
         }
         function applyDraftMedis() {
@@ -751,49 +794,138 @@
             saveFormDraft();
         }
 
-        // === 2. FITUR ZAT & DIAGNOSIS DINAMIS ===
-        let masterZat = @json($masterZat);
-        let masterDiagnosis = @json($masterDiagnosis);
-        let prevZatString = "{{ old('alat_bukti_hasil', $asesmen->alat_bukti_hasil) }}";
 
+        // === PISAHAN DATA ZAT BUKTI & ZAT KESIMPULAN MENGGUNAKAN LOCALSTORAGE ===
+        let defaultZat = [
+            "Amphetamine (Amfetamin)",
+            "Methamphetamine (Metamfetamin)",
+            "Tetrahydrocannabinol",
+            "Benzodiazepines (Benzodiazepin)"
+        ];
+
+        let backendZat = @json($masterZat).map(z => z.nilai);
+        let initialZat = [...new Set([...defaultZat, ...backendZat])];
+
+        let zatBuktiList = JSON.parse(localStorage.getItem('custom_zat_bukti'));
+        if (!zatBuktiList) {
+            zatBuktiList = [...initialZat];
+            localStorage.setItem('custom_zat_bukti', JSON.stringify(zatBuktiList));
+        }
+
+        let zatKesimpulanList = JSON.parse(localStorage.getItem('shared_master_zat_narkotika'));
+        if (!zatKesimpulanList) {
+            zatKesimpulanList = [...initialZat];
+            localStorage.setItem('shared_master_zat_narkotika', JSON.stringify(zatKesimpulanList));
+        }
+
+        let masterDiagnosis = @json($masterDiagnosis);
         let defaultDiagnosis = {!! json_encode($asesmen->diagnosis_medis ?? '') !!};
 
         function renderOpsiData() {
-            let contZat = document.getElementById('container-zat');
-            contZat.innerHTML = '';
-            let currentStr = document.getElementById('alat_bukti_hasil_input').value;
-            masterZat.forEach(z => {
-                let isChecked = currentStr.includes(z.nilai) ? 'checked' : '';
-                contZat.innerHTML += `
-                    <label class="flex items-center gap-2 cursor-pointer mb-1.5 text-[13px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 p-1.5 rounded-lg transition-colors border border-transparent hover:border-emerald-100">
-                        <input type="checkbox" value="${z.nilai}" ${isChecked} onchange="updateZatTerpilih()" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 shadow-sm border-slate-300">
-                        ${z.nilai}
-                    </label>
-                `;
-            });
+            // 1. RENDER ZAT BUKTI (CHECKBOX)
+            let contZatBukti = document.getElementById('container-zat-alat-bukti');
+            if(contZatBukti) {
+                contZatBukti.innerHTML = '';
+                let currentStrBukti = document.getElementById('alat_bukti_hasil_input').value;
 
+                // Cek kondisi tes urine
+                const tesUrineVal = document.getElementById('tes_urine_ba').value;
+                const isUrineNegatif = (tesUrineVal === 'NEGATIF');
+
+                zatBuktiList.forEach(val => {
+                    let isCheckedBukti = currentStrBukti.includes(val) && !isUrineNegatif ? 'checked' : '';
+                    let disabledProp = isUrineNegatif ? 'disabled' : '';
+                    let opacityClass = isUrineNegatif ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-100';
+
+                    contZatBukti.innerHTML += `
+                        <label class="flex items-center gap-2 mb-1.5 text-[13px] font-bold text-slate-700 p-1.5 rounded-lg transition-colors border border-transparent ${opacityClass}">
+                            <input type="checkbox" value="${val}" ${isCheckedBukti} ${disabledProp} onchange="updateZatBukti()" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 shadow-sm border-slate-300">
+                            ${val}
+                        </label>
+                    `;
+                });
+            }
+
+            // 2. RENDER ZAT KESIMPULAN (CHECKBOX SINKRON DENGAN REKOMENDASI)
+            let contZatKesim = document.getElementById('container-zat-kesimpulan');
+            if(contZatKesim) {
+                contZatKesim.innerHTML = '';
+                let currentStrKesim = document.getElementById('kesimpulan_jenis_zat_input').value;
+
+                zatKesimpulanList.forEach(val => {
+                    let isCheckedKesim = currentStrKesim.includes(val) ? 'checked' : '';
+                    contZatKesim.innerHTML += `
+                        <label class="flex items-center gap-2 cursor-pointer mb-1.5 text-[13px] font-bold text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 p-1.5 rounded-lg transition-colors border border-transparent hover:border-indigo-100">
+                            <input type="checkbox" value="${val}" ${isCheckedKesim} onchange="updateZatKesimpulan()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 shadow-sm border-slate-300">
+                            ${val}
+                        </label>
+                    `;
+                });
+            }
+
+            // 3. RENDER DIAGNOSIS MEDIS
             let selDiag = document.getElementById('select_diagnosis');
-            let currentDiag = selDiag.value || defaultDiagnosis;
+            if(selDiag) {
+                let currentDiag = selDiag.value || defaultDiagnosis;
+                selDiag.innerHTML = `<option value="">-- Pilih Diagnosis --</option>`;
 
-            selDiag.innerHTML = `<option value="">-- Pilih Diagnosis --</option>`;
+                let isDiagInMaster = false;
+                masterDiagnosis.forEach(d => {
+                    let isSelected = (d.nilai === currentDiag) ? 'selected' : '';
+                    if(d.nilai === currentDiag) isDiagInMaster = true;
+                    selDiag.innerHTML += `<option value="${d.nilai}" ${isSelected}>${d.nilai}</option>`;
+                });
 
-            let isDiagInMaster = false;
-            masterDiagnosis.forEach(d => {
-                let isSelected = (d.nilai === currentDiag) ? 'selected' : '';
-                if(d.nilai === currentDiag) isDiagInMaster = true;
-                selDiag.innerHTML += `<option value="${d.nilai}" ${isSelected}>${d.nilai}</option>`;
-            });
-
-            if (currentDiag && !isDiagInMaster) {
-                selDiag.innerHTML += `<option value="${currentDiag}" selected>${currentDiag}</option>`;
+                if (currentDiag && !isDiagInMaster) {
+                    selDiag.innerHTML += `<option value="${currentDiag}" selected>${currentDiag}</option>`;
+                }
             }
         }
 
-        function updateZatTerpilih() {
-            let checkboxes = document.querySelectorAll('#container-zat input[type="checkbox"]:checked');
+        // FUNGSI TOGGLE LOCK ZAT BUKTI JIKA URINE NEGATIF
+        function toggleZatBukti() {
+            const urineVal = document.getElementById('tes_urine_ba').value;
+            const btnTambahZatBukti = document.getElementById('btnTambahZatBukti');
+
+            if (urineVal === 'NEGATIF') {
+                if(btnTambahZatBukti) {
+                    btnTambahZatBukti.disabled = true;
+                    btnTambahZatBukti.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            } else {
+                if(btnTambahZatBukti) {
+                    btnTambahZatBukti.disabled = false;
+                    btnTambahZatBukti.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+            
+            // Re-render data and update output
+            renderOpsiData();
+            updateZatBukti();
+        }
+
+        // FUNGSI UPDATE ALAT BUKTI (DITAMBAH KATA POSITIF & DAN) ATAU MURNI NEGATIF
+        function updateZatBukti() {
+            let urineVal = document.getElementById('tes_urine_ba').value;
+            let checkboxes = document.querySelectorAll('#container-zat-alat-bukti input[type="checkbox"]:checked');
             let vals = Array.from(checkboxes).map(cb => cb.value);
-            let teksHasil = vals.length > 0 ? "POSITIF " + vals.join(' DAN ') : "";
+
+            let teksHasil = "";
+            if (urineVal === 'NEGATIF') {
+                teksHasil = "NEGATIF";
+            } else if (urineVal === 'POSITIF') {
+                teksHasil = vals.length > 0 ? "POSITIF " + vals.join(' DAN ') : "POSITIF";
+            }
+
             document.getElementById('alat_bukti_hasil_input').value = teksHasil;
+            document.getElementById('preview_alat_bukti_hasil').innerText = teksHasil || '-';
+            saveFormDraft();
+        }
+
+        // FUNGSI UPDATE KESIMPULAN (MURNI NAMA ZAT DENGAN KOMA)
+        function updateZatKesimpulan() {
+            let checkboxes = document.querySelectorAll('#container-zat-kesimpulan input[type="checkbox"]:checked');
+            let vals = Array.from(checkboxes).map(cb => cb.value);
             document.getElementById('kesimpulan_jenis_zat_input').value = vals.join(', ');
             saveFormDraft();
         }
@@ -802,7 +934,8 @@
             document.getElementById('modalOpsiKategori').value = kategori;
 
             let title = 'Tambah Data Baru';
-            if(kategori === 'zat') title = 'Tambah Zat Baru';
+            if(kategori === 'zat_bukti') title = 'Tambah Zat Positif Baru';
+            else if(kategori === 'zat_kesimpulan') title = 'Tambah Zat Pemakaian Baru';
             else if(kategori === 'diagnosis') title = 'Tambah Diagnosis Baru';
 
             document.getElementById('modalOpsiTitle').innerText = title;
@@ -811,31 +944,46 @@
         }
 
         function simpanOpsiBaru() {
-            let btn = document.getElementById('btnSimpanOpsi');
-            let data = {
-                kategori: document.getElementById('modalOpsiKategori').value,
-                nilai: document.getElementById('modalOpsiNilai').value,
-                _token: '{{ csrf_token() }}'
-            };
-            if(!data.nilai) return alert('Data tidak boleh kosong!');
+            let kategori = document.getElementById('modalOpsiKategori').value;
+            let nilai = document.getElementById('modalOpsiNilai').value.trim();
+            if(!nilai) return alert('Data tidak boleh kosong!');
 
-            btn.innerText = 'Tunggu...';
-            fetch('{{ route("master-opsi.storeAjax") }}', {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data)
-            }).then(r => r.json()).then(res => {
-                if(res.success) {
-                    if(data.kategori === 'zat') masterZat.push(res.data);
-                    else masterDiagnosis.push(res.data);
-
-                    renderOpsiData();
-                    document.getElementById('modalTambahOpsi').classList.add('hidden');
+            if (kategori === 'zat_bukti') {
+                if(!zatBuktiList.includes(nilai)) {
+                    zatBuktiList.push(nilai);
+                    localStorage.setItem('custom_zat_bukti', JSON.stringify(zatBuktiList));
                 }
-            }).finally(() => btn.innerText = 'Simpan');
+                renderOpsiData();
+                document.getElementById('modalTambahOpsi').classList.add('hidden');
+            } 
+            else if (kategori === 'zat_kesimpulan') {
+                if(!zatKesimpulanList.includes(nilai)) {
+                    zatKesimpulanList.push(nilai);
+                    localStorage.setItem('shared_master_zat_narkotika', JSON.stringify(zatKesimpulanList));
+                }
+                renderOpsiData();
+                document.getElementById('modalTambahOpsi').classList.add('hidden');
+            }
+            else if (kategori === 'diagnosis') {
+                let btn = document.getElementById('btnSimpanOpsi');
+                let data = { kategori: kategori, nilai: nilai, _token: '{{ csrf_token() }}' };
+                btn.innerText = 'Tunggu...';
+                fetch('{{ route("master-opsi.storeAjax") }}', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data)
+                }).then(r => r.json()).then(res => {
+                    if(res.success) {
+                        masterDiagnosis.push(res.data);
+                        renderOpsiData();
+                        document.getElementById('modalTambahOpsi').classList.add('hidden');
+                    }
+                }).finally(() => btn.innerText = 'Simpan');
+            }
         }
 
         function bukaKelolaOpsi(kategori) {
             let title = 'Kelola Opsi';
-            if(kategori === 'zat') title = 'Kelola Daftar Zat';
+            if(kategori === 'zat_bukti') title = 'Kelola Daftar Zat Positif';
+            else if(kategori === 'zat_kesimpulan') title = 'Kelola Daftar Zat Pemakaian';
             else if(kategori === 'diagnosis') title = 'Kelola Daftar Diagnosis';
 
             document.getElementById('kelolaOpsiTitle').innerText = title;
@@ -846,16 +994,48 @@
         function renderKelolaOpsiList(kategori) {
             let container = document.getElementById('kelolaOpsiList');
             container.innerHTML = '';
-            let data = kategori === 'zat' ? masterZat : masterDiagnosis;
+            
+            if (kategori === 'zat_bukti') {
+                zatBuktiList.forEach(val => {
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center p-3 border border-slate-100 rounded-xl mb-2 hover:bg-slate-50 transition-colors shadow-sm">
+                            <span class="text-sm font-bold text-slate-700">${val}</span>
+                            <button type="button" onclick="hapusOpsiLokalZat('${val}', '${kategori}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-[11px] font-bold px-3 py-1 rounded-lg transition-colors border border-rose-100">Hapus</button>
+                        </div>
+                    `;
+                });
+            } else if (kategori === 'zat_kesimpulan') {
+                zatKesimpulanList.forEach(val => {
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center p-3 border border-slate-100 rounded-xl mb-2 hover:bg-slate-50 transition-colors shadow-sm">
+                            <span class="text-sm font-bold text-slate-700">${val}</span>
+                            <button type="button" onclick="hapusOpsiLokalZat('${val}', '${kategori}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-[11px] font-bold px-3 py-1 rounded-lg transition-colors border border-rose-100">Hapus</button>
+                        </div>
+                    `;
+                });
+            } else if (kategori === 'diagnosis') {
+                masterDiagnosis.forEach(item => {
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center p-3 border border-slate-100 rounded-xl mb-2 hover:bg-slate-50 transition-colors shadow-sm">
+                            <span class="text-sm font-bold text-slate-700">${item.nilai}</span>
+                            <button type="button" onclick="hapusOpsiPermanen(${item.id}, '${kategori}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-[11px] font-bold px-3 py-1 rounded-lg transition-colors border border-rose-100">Hapus</button>
+                        </div>
+                    `;
+                });
+            }
+        }
 
-            data.forEach(item => {
-                container.innerHTML += `
-                    <div class="flex justify-between items-center p-3 border border-slate-100 rounded-xl mb-2 hover:bg-slate-50 transition-colors shadow-sm">
-                        <span class="text-sm font-bold text-slate-700">${item.nilai}</span>
-                        <button type="button" onclick="hapusOpsiPermanen(${item.id}, '${kategori}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-[11px] font-bold px-3 py-1 rounded-lg transition-colors border border-rose-100">Hapus</button>
-                    </div>
-                `;
-            });
+        function hapusOpsiLokalZat(nilai, kategori) {
+            if(!confirm('Hapus opsi ini dari daftar?')) return;
+            if(kategori === 'zat_bukti') {
+                zatBuktiList = zatBuktiList.filter(x => x !== nilai);
+                localStorage.setItem('custom_zat_bukti', JSON.stringify(zatBuktiList));
+            } else if (kategori === 'zat_kesimpulan') {
+                zatKesimpulanList = zatKesimpulanList.filter(x => x !== nilai);
+                localStorage.setItem('shared_master_zat_narkotika', JSON.stringify(zatKesimpulanList));
+            }
+            renderOpsiData();
+            renderKelolaOpsiList(kategori);
         }
 
         function hapusOpsiPermanen(id, kategori) {
@@ -864,14 +1044,13 @@
                 method: 'DELETE', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
             }).then(r => r.json()).then(res => {
                 if(res.success) {
-                    if(kategori === 'zat') masterZat = masterZat.filter(x => x.id !== id);
-                    else masterDiagnosis = masterDiagnosis.filter(x => x.id !== id);
-
+                    if(kategori === 'diagnosis') masterDiagnosis = masterDiagnosis.filter(x => x.id !== id);
                     renderOpsiData();
                     renderKelolaOpsiList(kategori);
                 }
             });
         }
+
 
         // === 3. FITUR TIM MEDIS & HUKUM ===
         let masterMedis = @json($masterMedis);
@@ -885,8 +1064,12 @@
             const selectDokter = document.getElementById('select-dokter-pemeriksa');
 
             container.innerHTML = ''; select.innerHTML = '<option value="">-- Pilih Dokter TAT --</option>';
-            let currentDokterVal = selectDokter.value || "{{ old('alat_bukti_dokter', $asesmen->alat_bukti_dokter) }}";
-            selectDokter.innerHTML = `<option value="${currentDokterVal}">${currentDokterVal || '-- Otomatis dari Tim Medis --'}</option>`;
+            
+            // 1. Simpan nilai dokter yang sedang terpilih saat ini
+            let currentDokterVal = selectDokter.value || "{!! old('alat_bukti_dokter', $asesmen->alat_bukti_dokter) !!}";
+            
+            // 2. Reset opsi selectDokter menjadi default kosong
+            selectDokter.innerHTML = '<option value="">-- Pilih Dokter Pemeriksa --</option>';
 
             selectedMedis.forEach(id => {
                 let p = masterMedis.find(x => x.id == id);
@@ -899,16 +1082,25 @@
                             <p class="text-[11px] font-bold text-indigo-500 uppercase tracking-wider">Jabatan: <span class="text-slate-600 normal-case">${p.jabatan || '-'}</span></p>
                         </div>
                     `;
-                    // Sinkronisasi ke dropdown Dokter Pemeriksa
-                    if(p.nama !== currentDokterVal) {
-                        selectDokter.innerHTML += `<option value="${p.nama}">${p.nama}</option>`;
-                    }
                 }
             });
 
             masterMedis.forEach(p => {
-                if(!selectedMedis.includes(p.id)) select.innerHTML += `<option value="${p.id}">${p.nama}</option>`;
+                // Untuk dropdown tambah anggota tim (yg belum terpilih)
+                if(!selectedMedis.includes(p.id)) {
+                    select.innerHTML += `<option value="${p.id}">${p.nama}</option>`;
+                }
+                
+                // UNTUK DROPDOWN DOKTER PEMERIKSA (MASUKKAN SEMUANYA DARI DATABASE)
+                let isSelected = (p.nama === currentDokterVal) ? 'selected' : '';
+                selectDokter.innerHTML += `<option value="${p.nama}" ${isSelected}>${p.nama}</option>`;
             });
+
+            // Jika ada value custom yg tidak ada di masterMedis, tetap tampilkan agar data lama tidak hilang
+            if (currentDokterVal && !masterMedis.some(m => m.nama === currentDokterVal)) {
+                 selectDokter.innerHTML += `<option value="${currentDokterVal}" selected>${currentDokterVal}</option>`;
+            }
+
             syncHiddenInputs();
         }
 
@@ -1064,13 +1256,16 @@
             renderMedis();
             renderHukum();
 
-            // 3. Muat draf lokal (halaman ini saja) terlebih dahulu
+            // 3. Muat draf lokal
             loadFormDraft();
+
+            // Jalankan validasi pengunci setelah draft dimuat
+            toggleZatBukti();
 
             if(hasSavedMedis === 'no' && document.getElementById('narasi_medis').value.trim() === '') document.getElementById('narasi_medis').value = getDraftMedis();
             if(hasSavedHukum === 'no' && document.getElementById('narasi_hukum').value.trim() === '') document.getElementById('narasi_hukum').value = getDraftHukum();
 
-            // 4. SINKRONISASI MUTLAK: Override draf lokal dengan 'Shared Value' Durasi Rawat
+            // 4. SINKRONISASI MUTLAK
             syncDurasiRawat();
 
             if(formBeritaAcara) {

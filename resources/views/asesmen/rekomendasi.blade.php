@@ -5,6 +5,10 @@
             50% { opacity: 0.5; }
         }
         .autosave-active { animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .custom-select-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-select-scroll::-webkit-scrollbar-track { background: #f8fafc; border-radius: 8px; }
+        .custom-select-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        .custom-select-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 
     <div class="py-8 sm:py-10 bg-slate-50/50 min-h-screen">
@@ -85,27 +89,6 @@
                             <span class="block text-[11px] font-medium text-purple-100 uppercase tracking-wider mb-0.5">Keputusan Tempat Rehabilitasi</span>
                             <span class="font-extrabold text-lg">{{ $tempatBersih }}</span>
                         </div>
-                        <form action="{{ route('asesmen.rekomendasi.unduh', $asesmen->id) }}" method="POST" class="flex-shrink-0">
-                            @csrf
-                            <input type="hidden" name="action" value="download">
-                            <input type="hidden" name="tempat_rehabilitasi" value="{{ $tempatBersih }}">
-                            <input type="hidden" name="rekomendasi_input" value="{{ $tempatBersih }}">
-                            <input type="hidden" name="no_surat_rekomendasi" value="{{ $asesmen->no_surat_rekomendasi }}">
-                            <input type="hidden" name="tgl_rekomendasi" value="{{ $asesmen->tgl_rekomendasi }}">
-                            <input type="hidden" name="kepada_yth" value="{{ $asesmen->kepada_yth }}">
-                            <input type="hidden" name="no_keputusan" value="{{ $asesmen->no_keputusan }}">
-                            <input type="hidden" name="tgl_keputusan" value="{{ $asesmen->tgl_keputusan }}">
-                            <input type="hidden" name="tentang_permohonan" value="{{ $asesmen->tentang_permohonan }}">
-                            <input type="hidden" name="kewarganegaraan" value="{{ $asesmen->kewarganegaraan }}">
-                            <input type="hidden" name="nama_narkotika_medis" value="{{ $asesmen->nama_narkotika_medis }}">
-                            <input type="hidden" name="lama_perawatan" value="{{ $asesmen->lama_perawatan }}">
-                            <input type="hidden" name="keterangan_diagnosis" value="{{ $asesmen->keterangan_diagnosis }}">
-
-                            <button type="submit" style="background-color: #9333ea;" class="inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-lg font-bold text-xs text-white uppercase tracking-widest hover:opacity-90 transition shadow-sm">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                Unduh
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -149,9 +132,17 @@
                                 <button type="button" onclick="openKelolaModal('kepada_yth', 'Tujuan Surat')" class="px-3 py-2.5 bg-slate-100 text-slate-600 rounded-lg text-[11px] font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap">KELOLA</button>
                             </div>
                         </div>
+                        
+                        <!-- Kewarganegaraan dikunci (Read-Only) -->
                         <div>
                             <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Kewarganegaraan Klien</label>
-                            <input type="text" name="kewarganegaraan" value="{{ old('kewarganegaraan', $asesmen->kewarganegaraan ?? 'Indonesia (WNI)') }}" class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-sm transition-all bg-slate-50 focus:bg-white">
+                            <div class="relative">
+                                <input type="text" name="kewarganegaraan" value="{{ old('kewarganegaraan', $asesmen->kewarganegaraan ?? 'Indonesia (WNI)') }}" readonly class="block w-full rounded-xl border-slate-200 shadow-sm sm:text-sm bg-slate-100 text-slate-500 font-bold pointer-events-none focus:ring-0 cursor-not-allowed">
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1 italic">Terkunci. Ubah data ini melalui menu "Edit Data Utama".</p>
                         </div>
                     </div>
                 </div>
@@ -210,28 +201,23 @@
                 <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1.5 bg-purple-500"></div>
                     <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wider mb-6 border-b border-slate-100 pb-3 flex items-center gap-2 mt-1">
-                        <svg class="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        <svg class="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
                         3. Diagnosis & Rekomendasi Medis
                     </h3>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- SINKRONISASI MASTER ZAT KESIMPULAN BERITA ACARA -->
                         <div>
-                            <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Nama Golongan Narkotika <span class="text-slate-400 font-medium normal-case">(Medis)</span> <span class="text-rose-500">*</span></label>
+                            <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Nama Golongan Narkotika (Medis) <span class="text-rose-500">*</span></label>
                             <div class="flex gap-2 items-center">
-                                <select name="nama_narkotika_medis" id="nama_narkotika_medis" required class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-sm transition-all bg-slate-50 focus:bg-white text-slate-700 font-medium">
+                                <select name="nama_narkotika_medis" id="nama_narkotika_medis" required class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-sm transition-all bg-slate-50 focus:bg-white text-slate-700 font-medium custom-select-scroll">
                                     <option value="">-- Pilih Golongan Narkotika --</option>
-                                    @if(isset($asesmen->nama_narkotika_medis) && $asesmen->nama_narkotika_medis !== '')
-                                        <option value="{{ $asesmen->nama_narkotika_medis }}" selected>{{ $asesmen->nama_narkotika_medis }}</option>
-                                    @endif
-                                    @foreach($riwayat_narkotika as $item)
-                                        @if($item->nama_narkotika_medis !== $asesmen->nama_narkotika_medis && $item->nama_narkotika_medis !== '')
-                                            <option value="{{ $item->nama_narkotika_medis }}">{{ $item->nama_narkotika_medis }}</option>
-                                        @endif
-                                    @endforeach
+                                    <!-- Options will be populated by JS from shared_master_zat_narkotika -->
                                 </select>
-                                <button type="button" onclick="openTambahModal('nama_narkotika_medis', 'Golongan Narkotika (Medis)')" class="px-3 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg text-[11px] font-bold hover:bg-indigo-100 transition shadow-sm whitespace-nowrap">+ TAMBAH</button>
-                                <button type="button" onclick="openKelolaModal('nama_narkotika_medis', 'Golongan Narkotika (Medis)')" class="px-3 py-2.5 bg-slate-100 text-slate-600 rounded-lg text-[11px] font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap">KELOLA</button>
+                                <button type="button" onclick="openTambahModal('nama_narkotika_medis', 'Golongan Narkotika (Medis)', 'shared_master_zat_narkotika')" class="px-3 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg text-[11px] font-bold hover:bg-indigo-100 transition shadow-sm whitespace-nowrap">+ TAMBAH</button>
+                                <button type="button" onclick="openKelolaModal('nama_narkotika_medis', 'Golongan Narkotika (Medis)', 'shared_master_zat_narkotika')" class="px-3 py-2.5 bg-slate-100 text-slate-600 rounded-lg text-[11px] font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap">KELOLA</button>
                             </div>
+                            <p class="text-[10px] text-slate-400 mt-1 italic">Tersinkronisasi dengan Master Jenis Zat pada Berita Acara.</p>
                         </div>
 
                         <!-- LAMA WAKTU PERAWATAN (SINKRONISASI 100%) -->
@@ -250,7 +236,7 @@
                                     }
                                     $allDurasi = array_unique(array_merge($defaultsDurasi, $dbRiwayat));
                                 @endphp
-                                <select name="lama_perawatan" id="lama_perawatan" required class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-sm transition-all bg-slate-50 focus:bg-white text-slate-700 font-medium">
+                                <select name="lama_perawatan" id="lama_perawatan" required class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-sm transition-all bg-slate-50 focus:bg-white text-slate-700 font-medium custom-select-scroll">
                                     <option value="">-- Pilih Waktu Perawatan --</option>
                                     @if($valDurasi !== '')
                                         <option value="{{ $valDurasi }}" selected>{{ $valDurasi }}</option>
@@ -266,10 +252,10 @@
                             </div>
                         </div>
 
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Keterangan Diagnosis Panjang <span class="text-rose-500">*</span></label>
                             <div class="flex gap-2 items-center">
-                                <select name="keterangan_diagnosis" id="keterangan_diagnosis" required class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-sm transition-all bg-slate-50 focus:bg-white text-slate-700 font-medium">
+                                <select name="keterangan_diagnosis" id="keterangan_diagnosis" required class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-sm transition-all bg-slate-50 focus:bg-white text-slate-700 font-medium custom-select-scroll">
                                     <option value="">-- Pilih Keterangan Diagnosis --</option>
                                     @if(isset($asesmen->keterangan_diagnosis) && $asesmen->keterangan_diagnosis !== '')
                                         <option value="{{ $asesmen->keterangan_diagnosis }}" selected>{{ $asesmen->keterangan_diagnosis }}</option>
@@ -284,9 +270,44 @@
                                 <button type="button" onclick="openKelolaModal('keterangan_diagnosis', 'Keterangan Diagnosis Panjang')" class="px-3 py-2.5 bg-slate-100 text-slate-600 rounded-lg text-[11px] font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap">KELOLA</button>
                             </div>
                         </div>
+
+                        <!-- FITUR BARU: KETERANGAN HUKUM REKOMENDASI (POIN 4.b) -->
+                        <div class="md:col-span-2">
+                            <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wide mb-1">Keterangan Hukum Rekomendasi (Poin 4.b) <span class="text-rose-500">*</span></label>
+                            <div class="flex gap-2 items-center">
+                                <select name="rekomendasi_keterangan" id="rekomendasi_keterangan" required class="block w-full rounded-xl border-slate-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:text-sm bg-slate-50 focus:bg-white h-auto py-3 leading-snug transition-all custom-select-scroll">
+                                    <option value="">-- Pilih Keterangan Hukum --</option>
+                                    @php
+                                        $ketList = [
+                                            "hasil pemeriksaan urine/rambut positif narkotika tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
+                                            "hasil pemeriksaan urine/rambut negatif narkotika tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
+                                            "hasil pemeriksaan urine/rambut positif narkotika dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
+                                            "hasil pemeriksaan urine/rambut negatif narkotika dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
+                                            "hasil pemeriksaan urine/rambut positif narkotika tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
+                                            "hasil pemeriksaan urine/rambut negatif narkotika tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
+                                            "hasil pemeriksaan urine/rambut positif narkotika dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
+                                            "hasil pemeriksaan urine/rambut negatif narkotika dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika"
+                                        ];
+                                        $savedKet = old('rekomendasi_keterangan', $asesmen->rekomendasi_keterangan);
+                                    @endphp
+                                    @if($savedKet !== '' && $savedKet !== null && !in_array($savedKet, $ketList))
+                                        <option value="{{ $savedKet }}" selected>{{ $savedKet }}</option>
+                                    @endif
+                                    @foreach($ketList as $ket)
+                                        <option value="{{ $ket }}" {{ $savedKet == $ket ? 'selected' : '' }}>{{ $ket }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="button" onclick="openTambahModal('rekomendasi_keterangan', 'Keterangan Hukum')" class="px-3 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg text-[11px] font-bold hover:bg-indigo-100 transition shadow-sm whitespace-nowrap">+ TAMBAH</button>
+                                <button type="button" onclick="openKelolaModal('rekomendasi_keterangan', 'Keterangan Hukum')" class="px-3 py-2.5 bg-slate-100 text-slate-600 rounded-lg text-[11px] font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap">KELOLA</button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
+                <!-- ========================================== -->
+                <!-- TOMBOL SUBMIT -->
+                <!-- ========================================== -->
                 <div class="flex justify-end gap-3 pt-4 bg-slate-50 p-4 border border-slate-200 rounded-lg">
                     <a href="{{ route('asesmen.show', $asesmen->id) }}" class="inline-flex items-center justify-center px-6 py-3 bg-white border border-slate-300 rounded-lg font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm">Batal</a>
                     <button type="submit" name="action" value="save" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 border border-transparent rounded-lg font-semibold text-white hover:bg-blue-700 focus:outline-none transition shadow-sm">Simpan Perubahan</button>
@@ -297,7 +318,7 @@
     </div>
 
     <!-- MODAL TAMBAH & KELOLA OPSI DINAMIS -->
-    <div id="modalTambah" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div id="modalTambahDurasi" class="fixed inset-0 z-[80] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeTambahModal()"></div>
         <div class="fixed inset-0 z-10 overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -317,7 +338,7 @@
         </div>
     </div>
 
-    <div id="modalKelola" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div id="modalKelolaDurasi" class="fixed inset-0 z-[80] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeKelolaModal()"></div>
         <div class="fixed inset-0 z-10 overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -328,7 +349,7 @@
                             <button onclick="closeKelolaModal()" class="text-slate-400 hover:text-rose-500 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                         </div>
                         <input type="hidden" id="kelola_target_id">
-                        <ul id="kelola_list" class="space-y-2 max-h-[40vh] overflow-y-auto pr-2"></ul>
+                        <ul id="kelola_list" class="space-y-2 max-h-[40vh] overflow-y-auto pr-2 custom-select-scroll"></ul>
                     </div>
                     <div class="bg-slate-50 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 border-t border-slate-100">
                         <button type="button" onclick="closeKelolaModal()" class="w-full inline-flex justify-center rounded-lg border border-transparent bg-slate-200 px-6 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-300 sm:w-auto transition-colors">Tutup Kelola</button>
@@ -348,12 +369,12 @@
             currentStorageKey = storageKey || selectId;
             document.getElementById('tambah_label').innerText = labelName;
             document.getElementById('tambah_input').value = '';
-            document.getElementById('modalTambah').classList.remove('hidden');
+            document.getElementById('modalTambahDurasi').classList.remove('hidden');
             setTimeout(() => document.getElementById('tambah_input').focus(), 100);
         }
 
         function closeTambahModal() {
-            document.getElementById('modalTambah').classList.add('hidden');
+            document.getElementById('modalTambahDurasi').classList.add('hidden');
         }
 
         function simpanOpsiBaruKhusus() {
@@ -361,7 +382,6 @@
             const newValue = document.getElementById('tambah_input').value.trim();
 
             if(newValue !== '') {
-                // Tambahkan opsi ke semua elemen durasi (jika yang ditambah adalah durasi)
                 let els = [];
                 if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi') {
                     if(document.getElementById('lama_perawatan')) els.push(document.getElementById('lama_perawatan'));
@@ -377,12 +397,13 @@
                     el.value = newValue;
                 });
 
-                // Simpan opsi ke local storage
-                let keyToSave = currentStorageKey || selectId;
-                let savedOpts = JSON.parse(localStorage.getItem('opsi_' + keyToSave)) || [];
+                // Tentukan key penyimpanannya, jika Narkotika Medis, set paksa ke shared_master_zat_narkotika
+                let storageString = (currentStorageKey === 'shared_master_zat_narkotika') ? currentStorageKey : 'opsi_' + (currentStorageKey || selectId);
+                let savedOpts = JSON.parse(localStorage.getItem(storageString)) || [];
+                
                 if (!savedOpts.includes(newValue)) {
                     savedOpts.push(newValue);
-                    localStorage.setItem('opsi_' + keyToSave, JSON.stringify(savedOpts));
+                    localStorage.setItem(storageString, JSON.stringify(savedOpts));
                 }
 
                 // SINKRONISASI VALUE TERPILIH ANTAR HALAMAN
@@ -422,15 +443,14 @@
             if(!hasItems) {
                 listContainer.innerHTML = '<li class="text-center text-slate-400 py-4 text-sm italic">Belum ada daftar riwayat tersimpan.</li>';
             }
-            document.getElementById('modalKelola').classList.remove('hidden');
+            document.getElementById('modalKelolaDurasi').classList.remove('hidden');
         }
 
         function closeKelolaModal() {
-            document.getElementById('modalKelola').classList.add('hidden');
+            document.getElementById('modalKelolaDurasi').classList.add('hidden');
         }
 
         function hapusOpsiLokal(selectId, valueToRemove, btnEl) {
-            // Hapus dari semua form durasi yang ada di halaman ini
             let els = [];
             if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi') {
                 if(document.getElementById('lama_perawatan')) els.push(document.getElementById('lama_perawatan'));
@@ -448,11 +468,12 @@
                 }
             });
 
-            // Hapus dari local storage
-            let keyToSave = currentStorageKey || selectId;
-            let savedOpts = JSON.parse(localStorage.getItem('opsi_' + keyToSave)) || [];
+            // Tentukan key hapusnya
+            let storageString = (currentStorageKey === 'shared_master_zat_narkotika') ? currentStorageKey : 'opsi_' + (currentStorageKey || selectId);
+            let savedOpts = JSON.parse(localStorage.getItem(storageString)) || [];
+            
             savedOpts = savedOpts.filter(item => item !== valueToRemove);
-            localStorage.setItem('opsi_' + keyToSave, JSON.stringify(savedOpts));
+            localStorage.setItem(storageString, JSON.stringify(savedOpts));
 
             const li = btnEl.closest('li');
             li.style.opacity = '0';
@@ -467,7 +488,8 @@
         }
 
         function loadSemuaOpsiLokal() {
-            const selectIds = ['kepada_yth', 'no_keputusan', 'tentang_permohonan', 'nama_narkotika_medis', 'keterangan_diagnosis'];
+            // DITAMBAHKAN rekomendasi_keterangan KE DALAM DAFTAR AUTO-LOAD
+            const selectIds = ['kepada_yth', 'no_keputusan', 'tentang_permohonan', 'keterangan_diagnosis', 'rekomendasi_keterangan'];
             selectIds.forEach(id => {
                 let savedOpts = JSON.parse(localStorage.getItem('opsi_' + id)) || [];
                 const selectEl = document.getElementById(id);
@@ -477,6 +499,33 @@
                     });
                 }
             });
+
+            // KHUSUS UNTUK SINKRONISASI NAMA NARKOTIKA MEDIS (Card 3)
+            let savedZat = JSON.parse(localStorage.getItem('shared_master_zat_narkotika'));
+            if (!savedZat) {
+                savedZat = [
+                    "Amphetamine (Amfetamin)",
+                    "Methamphetamine (Metamfetamin)",
+                    "Tetrahydrocannabinol",
+                    "Benzodiazepines (Benzodiazepin)"
+                ];
+                localStorage.setItem('shared_master_zat_narkotika', JSON.stringify(savedZat));
+            }
+            
+            const selectNarkotika = document.getElementById('nama_narkotika_medis');
+            if(selectNarkotika) {
+                savedZat.forEach(val => {
+                    if (!Array.from(selectNarkotika.options).some(opt => opt.value === val)) {
+                        selectNarkotika.add(new Option(val, val));
+                    }
+                });
+                
+                let currentNarkotika = "{{ old('nama_narkotika_medis', $asesmen->nama_narkotika_medis) }}";
+                if (currentNarkotika && !Array.from(selectNarkotika.options).some(opt => opt.value === currentNarkotika)) {
+                    selectNarkotika.add(new Option(currentNarkotika, currentNarkotika));
+                }
+                if(currentNarkotika) selectNarkotika.value = currentNarkotika;
+            }
         }
 
         function syncDurasiRawat() {
@@ -484,7 +533,6 @@
             if(document.getElementById('lama_perawatan')) els.push(document.getElementById('lama_perawatan'));
             if(document.getElementById('rekomendasi_durasi')) els.push(document.getElementById('rekomendasi_durasi'));
 
-            // Load opsi kustom ke semua dropdown durasi
             let savedDurasiOpts = JSON.parse(localStorage.getItem('opsi_lama_perawatan')) || [];
             els.forEach(select => {
                 savedDurasiOpts.forEach(val => {
@@ -494,7 +542,6 @@
                 });
             });
 
-            // Ganti isian dengan nilai yang terakhir kali dipilih (SINKRON ANTAR HALAMAN)
             let sharedDurasi = localStorage.getItem('shared_durasi_rawat_{{ $asesmen->id }}');
             if (sharedDurasi) {
                 els.forEach(select => {
@@ -505,7 +552,6 @@
                 });
             }
 
-            // Event Listener agar setiap perubahan tersimpan ke shared value
             els.forEach(select => {
                 select.addEventListener('change', function() {
                     localStorage.setItem('shared_durasi_rawat_{{ $asesmen->id }}', this.value);
@@ -521,7 +567,6 @@
                 });
             });
         }
-
 
         // === AUTOSAVE DRAFT FORM ===
         const formRekomendasi = document.getElementById('formRekomendasi');
@@ -563,14 +608,8 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Memuat semua custom options
             loadSemuaOpsiLokal();
-
-            // 2. Muat draf terlebih dahulu
             loadFormDraft();
-
-            // 3. SINKRONISASI MUTLAK
-            // Override nilai draf dengan shared value durasi (prioritas tertinggi)
             syncDurasiRawat();
 
             if(formRekomendasi) {
