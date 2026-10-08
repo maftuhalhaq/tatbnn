@@ -47,11 +47,21 @@
     <tbody>
         @foreach($asesmens as $index => $item)
             @php
-                $usia = ''; if ($item->tgl_lahir) { try { $usia = \Carbon\Carbon::parse($item->tgl_lahir)->diff(\Carbon\Carbon::parse($item->created_at ?? now()))->y; } catch (\Exception $e) {} }
+                $usia = ''; 
+                if ($item->tgl_lahir) { 
+                    try { 
+                        $usia = \Carbon\Carbon::parse($item->tgl_lahir)->diff(\Carbon\Carbon::parse($item->created_at ?? now()))->y; 
+                    } catch (\Exception $e) {} 
+                }
+                
                 $rekom = strtolower($item->rekomendasi_input ?? $item->rekomendasi->tempat_rehabilitasi ?? '');
-                $rJalan = str_contains($rekom, 'rawat jalan') ? 'V' : ''; $rInap = str_contains($rekom, 'rawat inap') ? 'V' : '';
-                $rLapas = (str_contains($rekom, 'lapas') || str_contains($rekom, 'rutan')) ? 'V' : ''; $rHukum = str_contains($rekom, 'tidak rehab') ? 'V' : '';
-                $pel_ya = $item->pelaksanaan == 'YA' ? 'V' : ''; $pel_tidak = $item->pelaksanaan == 'TIDAK' ? 'V' : '';
+                $rJalan = str_contains($rekom, 'rawat jalan') ? 'V' : ''; 
+                $rInap = str_contains($rekom, 'rawat inap') ? 'V' : '';
+                $rLapas = (str_contains($rekom, 'lapas') || str_contains($rekom, 'rutan')) ? 'V' : ''; 
+                $rHukum = str_contains($rekom, 'tidak rehab') ? 'V' : '';
+                
+                $pel_ya = $item->pelaksanaan == 'YA' ? 'V' : ''; 
+                $pel_tidak = $item->pelaksanaan == 'TIDAK' ? 'V' : '';
             @endphp
             <tr>
                 <td style="vertical-align: top; text-align: center;">{{ $index + 1 }}</td>
@@ -75,7 +85,7 @@
                 <td style="vertical-align: top;">{{ $item->pekerjaan_input ?? $item->pekerjaan->nama_pekerjaan ?? '' }}</td>
                 <td style="vertical-align: top;">{{ $item->no_hp ? "'" . $item->no_hp : '' }}</td>
                 <td style="vertical-align: top;">{{ $item->nik ? "'" . $item->nik : '' }}</td>
-                <td style="vertical-align: top;">{{ $item->narkotika->jenis_narkotika ?? '' }}</td>
+                <td style="vertical-align: top;">{{ $item->narkotika_input ?? $item->narkotika->jenis_narkotika ?? '' }}</td>
                 <td style="vertical-align: top;">{{ $item->berat_bb }}</td>
                 <td style="vertical-align: top;">{{ $item->pasal_sangkaan }}</td>
                 <td style="vertical-align: top;">{{ $item->hasil_asesmen_hukum }}</td>

@@ -58,27 +58,76 @@ class Asesmen extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    // --- Accessor: Mengecek Status Kelengkapan Data ---
+
     public function getStatusKelengkapanAttribute()
     {
-        // Ambil semua kolom yang ada di tabel asesmens untuk data ini
-        $attributes = $this->getAttributes();
+        // 1. Cek Field Utama dari halaman Create/Edit
+        $kolomUtama = [
+            'nama_lengkap',
+            'nik',
+            'no_register',
+            'no_bln',
+            'asal_pengajuan',
+            'no_surat_pengajuan',
+            'no_lkn',
+            'tgl_surat',
+            'tgl_berkas',
+            'tgl_pelaksanaan',
+            'tgl_tangkap',
+            'tempat_lahir',
+            'tgl_lahir',
+            'jenis_kelamin',
+            'kewarganegaraan',
+            'agama',
+            'alamat_ktp',
+            'alamat_domisili',
+            'berat_bb',
+            'pasal_sangkaan',
+            'deskripsi_bb',
+            'status_hukum',
+            'keterlibatan_jaringan',
+            'cara_mendapatkan',
+            'dapat_dari_siapa',
+            'kesehatan_fisik',
+            'psikologi',
+            'tes_urine',
+            'alasan_penggunaan',
+            'kondisi_keluarga',
+            'tingkat_ketergantungan',
+            'pola_pemakaian',
+            'kondisi_lingkungan',
+            'saran_case_conference',
+            'hasil_asesmen_hukum',
+            'hasil_asesmen_medis'
+        ];
 
-        // Daftar kolom sistem yang tidak perlu dicek kelengkapannya
-        $exclude = ['id', 'created_at', 'updated_at', 'created_by', 'foto_klien'];
-
-        foreach ($attributes as $key => $value) {
-            if (!in_array($key, $exclude)) {
-                // Jika ditemukan satu saja nilai yang NULL atau string kosong ('')
-                // (Angka 0 tetap akan terhitung sebagai data yang sudah diisi)
-                if (is_null($value) || trim((string)$value) === '') {
-                    return 'Data Belum Lengkap';
-                }
+        foreach ($kolomUtama as $kol) {
+            if (is_null($this->$kol) || trim((string) $this->$kol) === '') {
+                return 'BELUM LENGKAP';
             }
         }
 
-        // Jika seluruh loop selesai dan tidak ada yang kosong
-        return 'Data Lengkap';
+        // Cek Dropdown Narkotika
+        if (empty($this->narkotika_id) && empty($this->narkotika_input))
+            return 'BELUM LENGKAP';
+
+        // 2. Cek Berita Acara (Minimal ada No BA & Ketua TAT)
+        if (empty($this->no_ba) || empty($this->ketua_tat_nama)) {
+            return 'BELUM LENGKAP';
+        }
+
+        // 3. Cek Surat Rekomendasi (Minimal ada No Surat & Kepada Yth)
+        if (empty($this->no_surat_rekomendasi) || empty($this->kepada_yth)) {
+            return 'BELUM LENGKAP';
+        }
+
+        return 'DATA LENGKAP';
+    }
+
+    // Tambahan fungsi boolean (true/false) agar lebih mudah dipanggil di Blade (HTML)
+    public function getIsLengkapAttribute()
+    {
+        return $this->status_kelengkapan === 'DATA LENGKAP';
     }
 
     // --- Relasi Many-to-Many ke Tim Medis & Tim Hukum ---
