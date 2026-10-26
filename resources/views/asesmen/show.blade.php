@@ -33,38 +33,39 @@
     @php
         // 1. Penghitungan Usia Klien
         $usiaKlien = '-';
-        if (!empty($asesmen->tgl_lahir) && !empty($asesmen->created_at)) {
+        if (!empty($asesmen->tgl_lahir)) {
             try {
-                $usiaKlien = \Carbon\Carbon::parse($asesmen->tgl_lahir)->diff(\Carbon\Carbon::parse($asesmen->created_at))->y . ' Tahun';
+                // Hitung dari tgl_lahir sampai hari ini
+                $usiaKlien = \Carbon\Carbon::parse($asesmen->tgl_lahir)->age . ' Tahun';
             } catch (\Exception $e) { $usiaKlien = '-'; }
         }
 
-        // 2. LOGIKA KELENGKAPAN DATA (REVISI MUTLAK 100% FIELD)
+        // 2. LOGIKA KELENGKAPAN DATA (SUDAH DIKURASI)
         $kolomWajib = [
             'no_register', 'no_bln', 'asal_pengajuan', 'no_surat_pengajuan', 'no_lkn',
             'tgl_surat', 'tgl_berkas', 'tgl_pelaksanaan', 'tgl_tangkap',
-            'nama_lengkap', 'nik', 'kewarganegaraan', 'agama', 'tempat_lahir', 'tgl_lahir', 'jenis_kelamin', 'no_hp',
-            'pendidikan_id', 'pekerjaan_id', 'penghasilan_rata_rata', 'alamat_ktp', 'alamat_domisili',
+            'nama_lengkap', 'nik', 'kewarganegaraan', 'tempat_lahir', 'tgl_lahir', 'jenis_kelamin', 'no_hp',
+            'pendidikan_id', 'pekerjaan_id', 'alamat_ktp', 'alamat_domisili',
             'narkotika_id', 'berat_bb', 'deskripsi_bb', 'pasal_sangkaan',
             'status_hukum', 'keterlibatan_jaringan', 'cara_mendapatkan', 'dapat_dari_siapa',
             'tes_urine', 'hasil_asesmen_hukum', 'hasil_asesmen_medis',
-            'aspek_hukum', 'aspek_medis', 'kesehatan_fisik', 'psikologi',
-            'alasan_penggunaan', 'kondisi_keluarga', 'tingkat_ketergantungan', 'pola_pemakaian', 'kondisi_lingkungan', 'saran_case_conference'
+            'alasan_penggunaan', 'kondisi_keluarga', 'tingkat_ketergantungan', 'pola_pemakaian', 'kondisi_lingkungan'
         ];
 
         $isDataUtamaLengkap = true;
         foreach($kolomWajib as $kol) {
-            if ($asesmen->$kol === null || trim((string)$asesmen->$kol) === '') {
+            // Perhatikan ini: kita mengecek null, string kosong '', DAN string '-'
+            if ($asesmen->$kol === null || trim((string)$asesmen->$kol) === '' || trim((string)$asesmen->$kol) === '-') {
                 $isDataUtamaLengkap = false;
-                break;
+                break; // Jika ada 1 saja yang kosong/- , status langsung Gagal
             }
         }
 
         // Berita Acara Terisi (Minimal Nomor BA & Ketua TAT)
-        $isBaLengkap = !empty($asesmen->no_ba) && !empty($asesmen->ketua_tat_nama);
+        $isBaLengkap = !empty($asesmen->no_ba) && !empty($asesmen->ketua_tat_nama) && trim((string)$asesmen->no_ba) !== '-';
 
         // Rekomendasi Terisi (Minimal No Surat & Kepada Yth)
-        $isRekomLengkap = !empty($asesmen->no_surat_rekomendasi) && !empty($asesmen->kepada_yth);
+        $isRekomLengkap = !empty($asesmen->no_surat_rekomendasi) && !empty($asesmen->kepada_yth) && trim((string)$asesmen->no_surat_rekomendasi) !== '-';
 
         // Final Lengkap Status
         $isLengkapTotal = $isDataUtamaLengkap && $isBaLengkap && $isRekomLengkap;
@@ -135,7 +136,9 @@
                                 @endif
                             </div>
                             <h4 class="font-black text-[15px] text-slate-900 dark:text-white text-center leading-tight max-w-[150px]">{{ $asesmen->nama_lengkap ?? '-' }}</h4>
-                            <span class="inline-flex mt-2 px-3 py-1 bg-blue-50 dark:bg-[#1E293B] text-[#3B82F6] dark:text-blue-400 text-[10px] font-black rounded-lg border border-blue-100 dark:border-blue-900/50 shadow-inner">Usia: {{ $usiaKlien }}</span>
+                            <span class="inline-flex mt-2 px-3 py-1 bg-blue-50 dark:bg-[#1E293B] text-[#3B82F6] dark:text-blue-400 text-[10px] font-black rounded-lg border border-blue-100 dark:border-blue-900/50 shadow-inner">
+                                Usia: {{ !empty($asesmen->usia) ? $asesmen->usia . ' Tahun' : ($usiaKlien !== '-' ? $usiaKlien : '-') }}
+                            </span>
                         </div>
 
                         <!-- LIST DATA PROFIL -->
@@ -146,7 +149,7 @@
                             </div>
                             <div>
                                 <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Jenis Kelamin</span>
-                                <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->jenis_kelamin == 'L' ? 'Laki-Laki' : ($asesmen->jenis_kelamin == 'P' ? 'Perempuan' : '-') }}</div>
+                                <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->jenis_kelamin == 'L' ? 'LAKI-LAKI' : ($asesmen->jenis_kelamin == 'P' ? 'PEREMPUAN' : '-') }}</div>
                             </div>
                             <div>
                                 <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tempat Lahir</span>
@@ -155,6 +158,12 @@
                             <div>
                                 <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tanggal Lahir</span>
                                 <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->tgl_lahir ? \Carbon\Carbon::parse($asesmen->tgl_lahir)->format('d-m-Y') : '-' }}</div>
+                            </div>
+                            <div class="mb-4">
+                                <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Usia</span>
+                                <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">
+                                    {{ !empty($asesmen->usia) ? $asesmen->usia . ' Tahun' : ($usiaKlien !== '-' ? $usiaKlien : '-') }}
+                                </div>
                             </div>
                             <div>
                                 <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Agama</span>
@@ -166,11 +175,11 @@
                             </div>
                             <div>
                                 <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Pekerjaan</span>
-                                <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->pekerjaan_input ?? $asesmen->pekerjaan->nama_pekerjaan ?? '-' }}</div>
+                                <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ optional($asesmen->pekerjaan)->nama_pekerjaan ?? $asesmen->pekerjaan_input ?? '-' }}</div>
                             </div>
                             <div>
                                 <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Pendidikan Terakhir</span>
-                                <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->pendidikan_input ?? $asesmen->pendidikan->nama_pendidikan ?? '-' }}</div>
+                                <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ optional($asesmen->pendidikan)->nama_pendidikan ?? $asesmen->pendidikan_input ?? '-' }}</div>
                             </div>
                             <div>
                                 <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">No. Handphone</span>
@@ -278,8 +287,7 @@
                         </div>
                         <div>
                             <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Zat / Narkotika</span>
-                            <!-- SINKRONISASI UPDATE DROPDOWN -->
-                            <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-900 dark:text-white shadow-sm">{{ $asesmen->narkotika_input ?? $asesmen->narkotika->jenis_narkotika ?? '-' }}</div>
+                            <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-900 dark:text-white shadow-sm">{{ optional($asesmen->narkotika)->jenis_narkotika ?? $asesmen->narkotika_input ?? '-' }}</div>
                         </div>
                     </div>
 
@@ -290,7 +298,7 @@
                         </div>
                         <div class="md:col-span-2">
                             <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Detail Barang Bukti</span>
-                            <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-medium leading-relaxed text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->deskripsi_bb ?? '-' }}</div>
+                            <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-medium leading-relaxed text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->deskripsi_bb ?? $asesmen->barang_bukti ?? '-' }}</div>
                         </div>
                     </div>
 
@@ -301,7 +309,7 @@
                         </div>
                         <div>
                             <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Dapat Dari Siapa</span>
-                            <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->dapat_dari_siapa ?? '-' }}</div>
+                            <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->dapat_dari_siapa ?? $asesmen->dapat_dari ?? '-' }}</div>
                         </div>
                     </div>
 
@@ -314,7 +322,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Kesehatan (Fisik)</span>
-                            <div class="block w-full min-h-[60px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-4 text-[13px] font-medium whitespace-pre-line leading-relaxed text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->kesehatan_fisik ?? '-' }}</div>
+                            <div class="block w-full min-h-[60px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-4 text-[13px] font-medium whitespace-pre-line leading-relaxed text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->kesehatan_fisik ?? $asesmen->kesehatan ?? '-' }}</div>
                         </div>
                         <div>
                             <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Psikologi</span>
@@ -383,23 +391,39 @@
                     <div class="mb-5">
                         <span class="block text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1.5 ml-1">Rekomendasi TAT (Instansi)</span>
                         <div class="inline-block bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-400 font-black px-4 py-2.5 rounded-[1rem] text-[13px] border border-emerald-200 dark:border-emerald-800/50 shadow-sm">
-                            {{ $asesmen->rekomendasi_input ?? $asesmen->rekomendasi->tempat_rehabilitasi ?? '-' }}
+                            {{ optional($asesmen->rekomendasi)->tempat_rehabilitasi ?? $asesmen->rekomendasi_input ?? '-' }}
                         </div>
                     </div>
 
                     <div>
                         <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Saran Sidang Case Conference</span>
                         <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] p-5 shadow-sm">
-                            @php
-                                $saranList = array_filter(array_map('trim', explode(',', $asesmen->saran_case_conference ?? '')));
-                            @endphp
-                            @if(count($saranList) > 0)
-                                <ul class="list-decimal list-inside text-[13px] font-bold text-slate-800 dark:text-slate-200 space-y-2 leading-relaxed">
-                                    @foreach($saranList as $saran) <li>{{ $saran }}</li> @endforeach
-                                </ul>
+
+                            @if($asesmen->saran_1 || $asesmen->saran_2 || $asesmen->saran_3 || $asesmen->saran_4)
+                                <div class="space-y-3">
+                                    <div class="flex items-start gap-3">
+                                        <span class="font-bold text-slate-700 dark:text-slate-300">1.</span>
+                                        <div class="flex-1 text-[13px] font-bold text-slate-800 dark:text-slate-200">{{ $asesmen->saran_1 ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex items-start gap-3">
+                                        <span class="font-bold text-slate-700 dark:text-slate-300">2.</span>
+                                        <div class="flex-1 text-[13px] font-bold text-slate-800 dark:text-slate-200">{{ $asesmen->saran_2 ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex items-start gap-3">
+                                        <span class="font-bold text-slate-700 dark:text-slate-300">3.</span>
+                                        <div class="flex-1 text-[13px] font-bold text-slate-800 dark:text-slate-200">{{ $asesmen->saran_3 ?? '-' }}</div>
+                                    </div>
+                                    <div class="flex items-start gap-3">
+                                        <span class="font-bold text-slate-700 dark:text-slate-300">4.</span>
+                                        <div class="flex-1 text-[13px] font-bold text-slate-800 dark:text-slate-200">{{ $asesmen->saran_4 ?? '-' }}</div>
+                                    </div>
+                                </div>
                             @else
-                                <div class="text-[13px] font-bold text-slate-400 dark:text-slate-500 text-center py-2 uppercase tracking-widest">- Belum ada saran -</div>
+                                <div class="text-[13px] font-bold text-slate-400 dark:text-slate-500 text-center py-2 uppercase tracking-widest">
+                                    - Belum ada saran -
+                                </div>
                             @endif
+
                         </div>
                     </div>
 
@@ -425,7 +449,6 @@
                             <div class="block w-full min-h-[80px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-4 text-[13px] font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->hasil_asesmen_hukum ?? '-' }}</div>
                         </div>
                         <div>
-                            <!-- SINKRONISASI UPDATE LABEL -->
                             <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Hasil Asesmen Medis Final</span>
                             <div class="block w-full min-h-[80px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-4 text-[13px] font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->hasil_asesmen_medis ?? '-' }}</div>
                         </div>
@@ -443,8 +466,7 @@
                                 <span class="text-[13px] font-bold text-slate-400 dark:text-slate-500">-</span>
                             @endif
                         </div>
-                        
-                        <!-- SINKRONISASI KETERANGAN TAMBAHAN -->
+
                         <div class="md:col-span-2 pt-2 border-t border-slate-100 dark:border-slate-800 mt-4">
                             <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Keterangan Tambahan</span>
                             <div class="block w-full min-h-[60px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-4 text-[13px] font-medium italic leading-relaxed whitespace-pre-line text-slate-700 dark:text-slate-300 shadow-sm">{{ $asesmen->keterangan_tambahan ?? '-' }}</div>
@@ -453,14 +475,121 @@
                 </div>
 
                 <!-- ========================================== -->
-                <!-- CARD 5: DATA SURAT BERITA ACARA            -->
+                <!-- CARD 5: DATA SURAT REKOMENDASI             -->
                 <!-- ========================================== -->
                 <div class="bg-white dark:bg-[#0F172A] p-6 md:p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700/50 shadow-sm relative overflow-hidden transition-colors w-full mt-8">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-[#8B5CF6]"></div>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 gap-4 mt-1">
+                        <h3 class="text-sm font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            5. Data Surat Rekomendasi
+                        </h3>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            @can('akses-dokumen')
+                            <a href="{{ route('asesmen.rekomendasi', $asesmen->id) }}" class="flex-1 sm:flex-none text-center px-4 py-2 border border-purple-200 dark:border-purple-800/50 bg-purple-50 dark:bg-purple-500/10 rounded-xl font-black text-[10px] text-purple-700 dark:text-purple-400 uppercase tracking-widest hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-colors shadow-sm transform-gpu hover:-translate-y-0.5">
+                                Edit Form Rekom
+                            </a>
+                            @endcan
+                            <form action="{{ route('asesmen.rekomendasi.unduh', $asesmen->id) }}" method="POST" class="flex-1 sm:flex-none">
+                                @csrf
+                                <input type="hidden" name="action" value="download">
+                                <!-- Hidden Data Transfer... -->
+                                <input type="hidden" name="no_surat_rekomendasi" value="{{ $asesmen->no_surat_rekomendasi }}">
+                                <input type="hidden" name="tgl_rekomendasi" value="{{ $asesmen->tgl_rekomendasi }}">
+                                <input type="hidden" name="kepada_yth" value="{{ $asesmen->kepada_yth }}">
+                                <input type="hidden" name="no_keputusan" value="{{ $asesmen->no_keputusan }}">
+                                <input type="hidden" name="tgl_keputusan" value="{{ $asesmen->tgl_keputusan }}">
+                                <input type="hidden" name="tentang_permohonan" value="{{ $asesmen->tentang_permohonan }}">
+                                <input type="hidden" name="kewarganegaraan" value="{{ $asesmen->kewarganegaraan }}">
+                                <input type="hidden" name="nama_narkotika_medis" value="{{ $asesmen->nama_narkotika_medis }}">
+                                <input type="hidden" name="lama_perawatan" value="{{ $asesmen->lama_perawatan }}">
+                                <input type="hidden" name="keterangan_diagnosis" value="{{ $asesmen->keterangan_diagnosis }}">
+
+                                <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-purple-600 rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-purple-700 transition-colors shadow-sm transform-gpu hover:-translate-y-0.5">
+                                    Unduh Word
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    @if($asesmen->no_surat_rekomendasi || $asesmen->kepada_yth)
+                        <div class="space-y-8">
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-6 gap-x-6">
+                                <div class="col-span-2">
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Nomor Surat BNN</span>
+                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->no_surat_rekomendasi ?? '-' }}</div>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tujuan (Kepada Yth)</span>
+                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->kepada_yth ?? '-' }}</div>
+                                </div>
+
+                                <div>
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tanggal Surat</span>
+                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->tgl_rekomendasi ? \Carbon\Carbon::parse($asesmen->tgl_rekomendasi)->format('d-m-Y') : '-' }}</div>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Kewarganegaraan</span>
+                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->kewarganegaraan ?? '-' }}</div>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Golongan Narkotika</span>
+                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->nama_narkotika_medis ?? '-' }}</div>
+                                </div>
+
+                                <div class="col-span-2">
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">No. Keputusan Tim TAT</span>
+                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->no_keputusan ?? '-' }}</div>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tanggal Keputusan</span>
+                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->tgl_keputusan ? \Carbon\Carbon::parse($asesmen->tgl_keputusan)->format('d-m-Y') : '-' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tentang Permohonan (Isi Surat)</span>
+                                    <div class="block w-full min-h-[80px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-5 py-4 text-[13px] font-medium leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->tentang_permohonan ?? '-' }}</div>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Keterangan Diagnosis Panjang</span>
+                                    <div class="block w-full min-h-[80px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-5 py-4 text-[13px] font-medium leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->keterangan_diagnosis ?? '-' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pt-2 border-t border-slate-100 dark:border-slate-800">
+                                <div class="md:col-span-3">
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Keterangan Hukum Rekomendasi (Poin 4.B)</span>
+                                    <div class="block w-full min-h-[60px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-5 py-4 text-[13px] font-medium italic leading-relaxed text-slate-800 dark:text-slate-200 shadow-sm">"{{ $asesmen->rekomendasi_keterangan ?? '-' }}"</div>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Lama (Durasi) Rawat</span>
+                                    <div class="block w-full rounded-[1.25rem] border border-transparent bg-rose-50 dark:bg-rose-900/20 px-4 py-4 text-[16px] font-black uppercase text-rose-600 dark:text-rose-400 shadow-inner text-center">{{ $asesmen->lama_perawatan ?? $asesmen->rekomendasi_durasi ?? '-' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <!-- EMPTY STATE REKOMENDASI -->
+                        <div class="text-center py-12 border-2 border-dashed border-purple-200 dark:border-purple-800/50 rounded-[2rem] bg-purple-50/50 dark:bg-purple-900/10">
+                            <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-purple-500 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            </div>
+                            <h3 class="text-base font-black text-purple-800 dark:text-purple-400 mb-2">Belum Ada Surat Rekomendasi</h3>
+                            <p class="text-purple-600/70 dark:text-purple-500/70 text-xs font-bold uppercase tracking-widest">Silakan klik tombol Edit Form Rekom di atas untuk melengkapi data.</p>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- ========================================== -->
+                <!-- CARD 6: DATA SURAT BERITA ACARA            -->
+                <!-- ========================================== -->
+                <div class="bg-white dark:bg-[#0F172A] p-6 md:p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700/50 shadow-sm relative overflow-hidden transition-colors w-full mb-10 mt-8">
                     <div class="absolute top-0 left-0 w-full h-1.5 bg-[#10B981]"></div>
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 gap-4 mt-1">
                         <h3 class="text-sm font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            5. Data Surat Berita Acara
+                            6. Data Surat Berita Acara
                         </h3>
                         <div class="flex gap-2 w-full sm:w-auto">
                             @can('akses-dokumen')
@@ -603,108 +732,6 @@
                         </div>
                     @endif
                 </div>
-
-                <!-- ========================================== -->
-                <!-- CARD 6: DATA SURAT REKOMENDASI             -->
-                <!-- ========================================== -->
-                <div class="bg-white dark:bg-[#0F172A] p-6 md:p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700/50 shadow-sm relative overflow-hidden transition-colors w-full mb-10 mt-8">
-                    <div class="absolute top-0 left-0 w-full h-1.5 bg-[#8B5CF6]"></div>
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 gap-4 mt-1">
-                        <h3 class="text-sm font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                            6. Data Surat Rekomendasi
-                        </h3>
-                        <div class="flex gap-2 w-full sm:w-auto">
-                            @can('akses-dokumen')
-                            <a href="{{ route('asesmen.rekomendasi', $asesmen->id) }}" class="flex-1 sm:flex-none text-center px-4 py-2 border border-purple-200 dark:border-purple-800/50 bg-purple-50 dark:bg-purple-500/10 rounded-xl font-black text-[10px] text-purple-700 dark:text-purple-400 uppercase tracking-widest hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-colors shadow-sm transform-gpu hover:-translate-y-0.5">
-                                Edit Form Rekom
-                            </a>
-                            @endcan
-                            <form action="{{ route('asesmen.rekomendasi.unduh', $asesmen->id) }}" method="POST" class="flex-1 sm:flex-none">
-                                @csrf
-                                <input type="hidden" name="action" value="download">
-                                <!-- Hidden Data Transfer... -->
-                                <input type="hidden" name="no_surat_rekomendasi" value="{{ $asesmen->no_surat_rekomendasi }}">
-                                <input type="hidden" name="tgl_rekomendasi" value="{{ $asesmen->tgl_rekomendasi }}">
-                                <input type="hidden" name="kepada_yth" value="{{ $asesmen->kepada_yth }}">
-                                <input type="hidden" name="no_keputusan" value="{{ $asesmen->no_keputusan }}">
-                                <input type="hidden" name="tgl_keputusan" value="{{ $asesmen->tgl_keputusan }}">
-                                <input type="hidden" name="tentang_permohonan" value="{{ $asesmen->tentang_permohonan }}">
-                                <input type="hidden" name="kewarganegaraan" value="{{ $asesmen->kewarganegaraan }}">
-                                <input type="hidden" name="nama_narkotika_medis" value="{{ $asesmen->nama_narkotika_medis }}">
-                                <input type="hidden" name="lama_perawatan" value="{{ $asesmen->lama_perawatan }}">
-                                <input type="hidden" name="keterangan_diagnosis" value="{{ $asesmen->keterangan_diagnosis }}">
-
-                                <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-purple-600 rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-purple-700 transition-colors shadow-sm transform-gpu hover:-translate-y-0.5">
-                                    Unduh Word
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    @if($asesmen->no_surat_rekomendasi || $asesmen->kepada_yth)
-                        <div class="space-y-8">
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-6 gap-x-6">
-                                <div class="col-span-2">
-                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Nomor Surat BNN</span>
-                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->no_surat_rekomendasi ?? '-' }}</div>
-                                </div>
-                                <div class="col-span-2">
-                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tujuan (Kepada Yth)</span>
-                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->kepada_yth ?? '-' }}</div>
-                                </div>
-
-                                <div>
-                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tanggal Surat</span>
-                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->tgl_rekomendasi ? \Carbon\Carbon::parse($asesmen->tgl_rekomendasi)->format('d-m-Y') : '-' }}</div>
-                                </div>
-                                <div>
-                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Kewarganegaraan</span>
-                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->kewarganegaraan ?? '-' }}</div>
-                                </div>
-                                <div class="col-span-2">
-                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Golongan Narkotika</span>
-                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->nama_narkotika_medis ?? '-' }}</div>
-                                </div>
-
-                                <div class="col-span-2">
-                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">No. Keputusan Tim TAT</span>
-                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->no_keputusan ?? '-' }}</div>
-                                </div>
-                                <div class="col-span-2">
-                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tanggal Keputusan</span>
-                                    <div class="block w-full rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-4 py-3 text-[13px] font-bold text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->tgl_keputusan ? \Carbon\Carbon::parse($asesmen->tgl_keputusan)->format('d-m-Y') : '-' }}</div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <div>
-                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Tentang Permohonan (Isi Surat)</span>
-                                    <div class="block w-full min-h-[80px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-5 py-4 text-[13px] font-medium leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->tentang_permohonan ?? '-' }}</div>
-                                </div>
-                                <div>
-                                    <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Keterangan Diagnosis Panjang</span>
-                                    <div class="block w-full min-h-[80px] rounded-[1.25rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] px-5 py-4 text-[13px] font-medium leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-slate-200 shadow-sm">{{ $asesmen->keterangan_diagnosis ?? '-' }}</div>
-                                </div>
-                            </div>
-
-                            <div class="pt-2">
-                                <span class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Lama Waktu Perawatan</span>
-                                <div class="inline-block rounded-[1.25rem] border border-transparent bg-rose-50 dark:bg-rose-900/20 px-6 py-4 text-[16px] font-black uppercase text-rose-600 dark:text-rose-400 shadow-inner text-center">{{ $asesmen->lama_perawatan ?? '-' }}</div>
-                            </div>
-                        </div>
-                    @else
-                        <!-- EMPTY STATE REKOMENDASI -->
-                        <div class="text-center py-12 border-2 border-dashed border-purple-200 dark:border-purple-800/50 rounded-[2rem] bg-purple-50/50 dark:bg-purple-900/10">
-                            <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg class="w-8 h-8 text-purple-500 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                            </div>
-                            <h3 class="text-base font-black text-purple-800 dark:text-purple-400 mb-2">Belum Ada Surat Rekomendasi</h3>
-                            <p class="text-purple-600/70 dark:text-purple-500/70 text-xs font-bold uppercase tracking-widest">Silakan klik tombol Edit Form Rekom di atas untuk melengkapi data.</p>
-                        </div>
-                    @endif
-                </div>
-
             </div> <!-- END CONTAINER RAKSASA -->
 
         </div>

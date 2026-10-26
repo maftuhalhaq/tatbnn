@@ -138,9 +138,14 @@
                                 <input type="text" name="tgl_lahir" id="tgl_lahir" value="{{ old('tgl_lahir', $asesmen->tgl_lahir ? \Carbon\Carbon::parse($asesmen->tgl_lahir)->format('Y-m-d') : '') }}" class="datepicker-id block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-[#3B82F6] focus:ring-2 focus:ring-blue-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="Pilih Tanggal">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Usia <span class="text-[#3B82F6] dark:text-blue-400 ml-1 lowercase font-bold">(Saat Didaftarkan)</span></label>
-                                <input type="text" name="usia" id="usia" value="{{ old('usia') }}" class="block w-full rounded-[1.25rem] border-transparent shadow-inner text-sm font-black bg-blue-50 dark:bg-[#1E293B] text-[#3B82F6] dark:text-blue-400 px-4 py-3 pointer-events-none" placeholder="0 Tahun" readonly>
-                            </div>
+    <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+        Usia <span class="text-[#3B82F6] dark:text-blue-400 ml-1 lowercase font-bold">(Otomatis / Import)</span>
+    </label>
+    <input type="text" name="usia" id="usia"
+           value="{{ old('usia', $asesmen->usia ? $asesmen->usia . ' Tahun' : '') }}"
+           class="block w-full rounded-[1.25rem] border-transparent shadow-inner text-sm font-black bg-blue-50 dark:bg-[#1E293B] text-[#3B82F6] dark:text-blue-400 px-4 py-3 pointer-events-none"
+           placeholder="0 Tahun" readonly>
+</div>
 
                             <div>
                                 <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Kewarganegaraan</label>
@@ -640,16 +645,15 @@
                         <!-- 21. saran_case_conference -->
                         <div>
                             <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Saran Sidang Case Conference</label>
-                            <input type="hidden" name="saran_case_conference" id="hidden_saran_cc" value="{{ old('saran_case_conference', $asesmen->saran_case_conference) }}">
-                            @php
-                                $saranLama = old('saran_case_conference', $asesmen->saran_case_conference);
-                                $saranList = $saranLama ? array_map('trim', explode(",", $saranLama)) : [];
-                            @endphp
                             <div class="grid grid-cols-1 gap-3">
-                                <input type="text" class="saran-cc-input block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="1. ..." value="{{ $saranList[0] ?? '' }}">
-                                <input type="text" class="saran-cc-input block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="2. ..." value="{{ $saranList[1] ?? '' }}">
-                                <input type="text" class="saran-cc-input block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="3. ..." value="{{ $saranList[2] ?? '' }}">
-                                <input type="text" class="saran-cc-input block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="4. ..." value="{{ $saranList[3] ?? '' }}">
+                                <!-- Tambahkan name="saran_X" dan panggil $asesmen->saran_X di value -->
+                                <input type="text" name="saran_1" value="{{ old('saran_1', $asesmen->saran_1) }}" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="1. ...">
+
+                                <input type="text" name="saran_2" value="{{ old('saran_2', $asesmen->saran_2) }}" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="2. ...">
+
+                                <input type="text" name="saran_3" value="{{ old('saran_3', $asesmen->saran_3) }}" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="3. ...">
+
+                                <input type="text" name="saran_4" value="{{ old('saran_4', $asesmen->saran_4) }}" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="4. ...">
                             </div>
                         </div>
                     </div>
@@ -670,12 +674,12 @@
                                 <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Pasal Yang Disangkakan</label>
                                 <input type="text" name="pasal_sangkaan" value="{{ old('pasal_sangkaan', $asesmen->pasal_sangkaan) }}" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-[#27C93F] focus:ring-2 focus:ring-green-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="Cth: Pasal 114 ayat (1)...">
                             </div>
-                            
+
                             <div>
                                 <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Hasil Asesmen Hukum Final</label>
                                 <textarea name="hasil_asesmen_hukum" rows="3" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-[#27C93F] focus:ring-2 focus:ring-green-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none">{{ old('hasil_asesmen_hukum', $asesmen->hasil_asesmen_hukum) }}</textarea>
                             </div>
-                            
+
                             <div>
                                 <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Hasil Asesmen Medis Final</label>
                                 <textarea name="hasil_asesmen_medis" rows="3" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-[#27C93F] focus:ring-2 focus:ring-green-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none">{{ old('hasil_asesmen_medis', $asesmen->hasil_asesmen_medis) }}</textarea>
@@ -691,7 +695,7 @@
                                     <option value="TIDAK" {{ old('pelaksanaan', $asesmen->pelaksanaan) == 'TIDAK' ? 'selected' : '' }}>TIDAK (Belum/Batal)</option>
                                 </select>
                             </div>
-                            
+
                             <!-- BARU: Keterangan Tambahan -->
                             <div class="md:col-span-2 mt-2">
                                 <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Keterangan Tambahan <span class="font-normal lowercase tracking-normal text-slate-400">(Opsional)</span></label>
@@ -1286,15 +1290,31 @@
             if (rib) { let sep = sisa ? '.' : ''; rup += sep + rib.join('.'); } rup = spl[1] != undefined ? rup + ',' + spl[1] : rup; return prefix == undefined ? rup : (rup ? 'Rp. ' + rup : '');
         }
         function hitungUsia() {
-            const tl = document.getElementById('tgl_lahir').value.trim(); const us = document.getElementById('usia');
-            if (!tl) { us.value = ''; return; }
+            const tl = document.getElementById('tgl_lahir').value.trim();
+            const us = document.getElementById('usia');
+
+            // JIKA TANGGAL LAHIR KOSONG:
+            if (!tl) {
+                // JANGAN KOSONGKAN INPUT jika di database sudah ada nilai usia (hasil import Excel)
+                // Biarkan nilai yang dibawa dari server tetap tampil!
+                return;
+            }
+
             let rd = tl.split(' ')[0], pts = rd.split('-'); let dob;
-            if (pts.length === 3) { let p0 = pts[0], p2 = pts[2]; if (p0.length === 4) dob = new Date(parseInt(p0), parseInt(pts[1]) - 1, parseInt(p2)); else if (p2.length === 4) dob = new Date(parseInt(p2), parseInt(pts[1]) - 1, parseInt(p0)); }
-            if (!dob || isNaN(dob.getTime())) dob = new Date(rd); if (isNaN(dob.getTime())) return;
+            if (pts.length === 3) {
+                let p0 = pts[0], p2 = pts[2];
+                if (p0.length === 4) dob = new Date(parseInt(p0), parseInt(pts[1]) - 1, parseInt(p2));
+                else if (p2.length === 4) dob = new Date(parseInt(p2), parseInt(pts[1]) - 1, parseInt(p0));
+            }
+            if (!dob || isNaN(dob.getTime())) dob = new Date(rd);
+            if (isNaN(dob.getTime())) return;
+
             let refDateStr = "{{ $asesmen->created_at ? \Carbon\Carbon::parse($asesmen->created_at)->format('Y-m-d') : now()->format('Y-m-d') }}";
-            let refDate = new Date(refDateStr); let age = refDate.getFullYear() - dob.getFullYear(); let m = refDate.getMonth() - dob.getMonth();
+            let refDate = new Date(refDateStr);
+            let age = refDate.getFullYear() - dob.getFullYear();
+            let m = refDate.getMonth() - dob.getMonth();
             if (m < 0 || (m === 0 && refDate.getDate() < dob.getDate())) age--;
-            if(age >= 0) us.value = age + ' Tahun';
+            if (age >= 0) us.value = age + ' Tahun';
         }
 
         function previewImage(event) {
@@ -1658,18 +1678,18 @@
                 }
             });
 
-            const lsNark = JSON.parse(localStorage.getItem('customNarkotika'))||[]; 
-            const sNark = document.getElementById('selectNarkotika'); 
-            const lNark = document.getElementById('listKelolaNarkotika'); 
-            lsNark.forEach(v => { 
-                if(sNark && !Array.from(sNark.options).some(o=>o.value===v)){ 
-                    const op=document.createElement('option');op.value=v;op.textContent=v;op.className='dark:bg-slate-800';sNark.appendChild(op); 
-                    if(lNark){ 
-                        const em=lNark.querySelector('.empty-msg');if(em)em.remove(); 
-                        const safeV=v.replace(/'/g,"\\'").replace(/"/g,"&quot;").replace(/\n/g," ");const safeIdV=v.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase();const id='draft-nark-'+safeIdV; 
-                        lNark.insertAdjacentHTML('afterbegin',`<div class="flex justify-between items-center p-4 border border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-[#0F172A]/50 rounded-2xl hover:bg-slate-100 dark:hover:bg-[#0F172A] transition-colors" id="${id}"><span class="text-sm font-bold text-slate-700 dark:text-slate-300">${v}</span><button type="button" onclick="hapusDraftNarkotika('${safeV}', '${id}')" class="text-[10px] uppercase tracking-widest font-black text-rose-500 dark:text-rose-400 bg-white dark:bg-[#1E293B] hover:bg-rose-50 dark:hover:bg-rose-900/30 border border-rose-100 dark:border-rose-900/50 px-4 py-2 rounded-xl transition-colors shadow-sm">Hapus</button></div>`); 
-                    } 
-                } 
+            const lsNark = JSON.parse(localStorage.getItem('customNarkotika'))||[];
+            const sNark = document.getElementById('selectNarkotika');
+            const lNark = document.getElementById('listKelolaNarkotika');
+            lsNark.forEach(v => {
+                if(sNark && !Array.from(sNark.options).some(o=>o.value===v)){
+                    const op=document.createElement('option');op.value=v;op.textContent=v;op.className='dark:bg-slate-800';sNark.appendChild(op);
+                    if(lNark){
+                        const em=lNark.querySelector('.empty-msg');if(em)em.remove();
+                        const safeV=v.replace(/'/g,"\\'").replace(/"/g,"&quot;").replace(/\n/g," ");const safeIdV=v.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase();const id='draft-nark-'+safeIdV;
+                        lNark.insertAdjacentHTML('afterbegin',`<div class="flex justify-between items-center p-4 border border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-[#0F172A]/50 rounded-2xl hover:bg-slate-100 dark:hover:bg-[#0F172A] transition-colors" id="${id}"><span class="text-sm font-bold text-slate-700 dark:text-slate-300">${v}</span><button type="button" onclick="hapusDraftNarkotika('${safeV}', '${id}')" class="text-[10px] uppercase tracking-widest font-black text-rose-500 dark:text-rose-400 bg-white dark:bg-[#1E293B] hover:bg-rose-50 dark:hover:bg-rose-900/30 border border-rose-100 dark:border-rose-900/50 px-4 py-2 rounded-xl transition-colors shadow-sm">Hapus</button></div>`);
+                    }
+                }
             });
 
             initAllCustomSelects();

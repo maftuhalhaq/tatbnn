@@ -252,11 +252,12 @@
                     <div class="bg-white dark:bg-[#0F172A] p-6 md:p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700/50 shadow-sm relative z-[20] transition-colors">
                         <div class="absolute top-0 left-0 w-full h-1.5 bg-[#8B5CF6] rounded-t-[2rem]"></div>
                         <h3 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-2 mt-1">
-                            <svg class="w-5 h-5 text-[#8B5CF6]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+                            <svg class="w-5 h-5 text-[#8B5CF6]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             3. Diagnosis & Rekomendasi Medis
                         </h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
                             <!-- SINKRONISASI MASTER ZAT KESIMPULAN BERITA ACARA -->
                             <div>
                                 <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Nama Golongan Narkotika (Medis) <span class="text-rose-500">*</span></label>
@@ -303,7 +304,7 @@
                                 </div>
                             </div>
 
-                            <div class="md:col-span-2">
+                            <div class="md:col-span-2 pt-2">
                                 <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Keterangan Diagnosis Panjang <span class="text-rose-500">*</span></label>
                                 <div class="flex gap-2 items-center">
                                     <select name="keterangan_diagnosis" id="keterangan_diagnosis" required class="block w-full text-sm">
@@ -323,21 +324,21 @@
                             </div>
 
                             <!-- FITUR BARU: KETERANGAN HUKUM REKOMENDASI (POIN 4.b) -->
-                            <div class="md:col-span-2">
+                            <div class="md:col-span-2 pt-2">
                                 <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Keterangan Hukum Rekomendasi (Poin 4.b) <span class="text-rose-500">*</span></label>
                                 <div class="flex gap-2 items-center">
                                     <select name="rekomendasi_keterangan" id="rekomendasi_keterangan" required class="block w-full text-sm">
                                         <option value="" class="dark:bg-slate-800">-- Pilih Keterangan Hukum --</option>
                                         @php
                                             $ketList = [
-                                                "hasil pemeriksaan urine/rambut positif narkotika tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
-                                                "hasil pemeriksaan urine/rambut negatif narkotika tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
-                                                "hasil pemeriksaan urine/rambut positif narkotika dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
-                                                "hasil pemeriksaan urine/rambut negatif narkotika dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
-                                                "hasil pemeriksaan urine/rambut positif narkotika tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
-                                                "hasil pemeriksaan urine/rambut negatif narkotika tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
-                                                "hasil pemeriksaan urine/rambut positif narkotika dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika",
-                                                "hasil pemeriksaan urine/rambut negatif narkotika dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika"
+                                                "Hasil pemeriksaan urine/rambut positif narkotika tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                "Hasil pemeriksaan urine/rambut negatif narkotika tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                "Hasil pemeriksaan urine/rambut positif narkotika dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                "Hasil pemeriksaan urine/rambut negatif narkotika dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                "Hasil pemeriksaan urine/rambut positif narkotika tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                "Hasil pemeriksaan urine/rambut negatif narkotika tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                "Hasil pemeriksaan urine/rambut positif narkotika dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                "Hasil pemeriksaan urine/rambut negatif narkotika dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika."
                                             ];
                                             $savedKet = old('rekomendasi_keterangan', $asesmen->rekomendasi_keterangan);
                                         @endphp
@@ -351,8 +352,8 @@
                                     <button type="button" onclick="openTambahModal('rekomendasi_keterangan', 'Keterangan Hukum')" class="shrink-0 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-800/50 transition-colors shadow-sm">+ Tambah</button>
                                     <button type="button" onclick="openKelolaModal('rekomendasi_keterangan', 'Keterangan Hukum')" class="shrink-0 px-4 py-2 bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">Kelola</button>
                                 </div>
+                                <p class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mt-2 ml-1">Tersinkronisasi dengan master Keterangan Hukum pada Berita Acara.</p>
                             </div>
-
                         </div>
                     </div>
 
@@ -430,7 +431,7 @@
                 }
 
                 const span = document.createElement('span');
-                span.className = 'truncate pointer-events-none flex-1';
+                span.className = 'pointer-events-none flex-1 whitespace-normal break-words pr-2';
 
                 let selectedText = '-- Pilih --';
                 if (select.selectedIndex >= 0 && select.options[select.selectedIndex]) {
@@ -456,7 +457,7 @@
                     hasVisibleOptions = true;
 
                     const item = document.createElement('div');
-                    item.className = 'px-4 py-2.5 mx-1.5 mt-0.5 rounded-xl cursor-pointer text-sm transition-colors ';
+                    item.className = 'px-4 py-2.5 mx-1.5 mt-0.5 rounded-xl cursor-pointer text-sm transition-colors whitespace-normal break-words ';
 
                     if (opt.disabled && opt.value === '') {
                         item.className += 'text-slate-400 font-bold opacity-70 cursor-default pointer-events-none';
@@ -581,7 +582,8 @@
                     if(document.getElementById('lama_perawatan')) els.push(document.getElementById('lama_perawatan'));
                     if(document.getElementById('rekomendasi_durasi')) els.push(document.getElementById('rekomendasi_durasi'));
                 } else {
-                    els.push(document.getElementById(selectId));
+                    const el = document.getElementById(selectId);
+                    if(el) els.push(el);
                 }
 
                 els.forEach(el => {
@@ -593,8 +595,9 @@
                     el.value = newValue;
                 });
 
-                // Tentukan key penyimpanannya, jika Narkotika Medis, set paksa ke shared_master_zat_narkotika
-                let storageString = (currentStorageKey === 'shared_master_zat_narkotika') ? currentStorageKey : 'opsi_' + (currentStorageKey || selectId);
+                // Tentukan key penyimpanannya
+                let keyToSave = currentStorageKey || selectId;
+                let storageString = (keyToSave === 'shared_master_zat_narkotika') ? keyToSave : 'opsi_' + keyToSave;
                 let savedOpts = JSON.parse(localStorage.getItem(storageString)) || [];
 
                 if (!savedOpts.includes(newValue)) {
@@ -603,8 +606,11 @@
                 }
 
                 // SINKRONISASI VALUE TERPILIH ANTAR HALAMAN
-                if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi' || currentStorageKey === 'lama_perawatan') {
+                if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi' || keyToSave === 'lama_perawatan') {
                     localStorage.setItem('shared_durasi_rawat_{{ $asesmen->id }}', newValue);
+                }
+                if (selectId === 'rekomendasi_keterangan' || keyToSave === 'rekomendasi_keterangan') {
+                    localStorage.setItem('shared_ket_hukum_{{ $asesmen->id }}', newValue);
                 }
 
                 closeTambahModal();
@@ -670,7 +676,8 @@
             });
 
             // Tentukan key hapusnya
-            let storageString = (currentStorageKey === 'shared_master_zat_narkotika') ? currentStorageKey : 'opsi_' + (currentStorageKey || selectId);
+            let keyToSave = currentStorageKey || selectId;
+            let storageString = (keyToSave === 'shared_master_zat_narkotika') ? keyToSave : 'opsi_' + keyToSave;
             let savedOpts = JSON.parse(localStorage.getItem(storageString)) || [];
 
             savedOpts = savedOpts.filter(item => item !== valueToRemove);
@@ -689,48 +696,47 @@
         }
 
         function loadSemuaOpsiLokal() {
-            // DITAMBAHKAN rekomendasi_keterangan KE DALAM DAFTAR AUTO-LOAD
-            const selectIds = ['kepada_yth', 'no_keputusan', 'tentang_permohonan', 'keterangan_diagnosis', 'rekomendasi_keterangan'];
+            const selectIds = ['kepada_yth', 'no_keputusan', 'tentang_permohonan', 'keterangan_diagnosis'];
             selectIds.forEach(id => {
-                let savedOpts = JSON.parse(localStorage.getItem('opsi_' + id)) || [];
-                const selectEl = document.getElementById(id);
-                if(selectEl) {
-                    savedOpts.forEach(val => {
-                        if (!Array.from(selectEl.options).some(opt => opt.value === val)) {
-                            let opt = new Option(val, val);
-                            opt.className = 'dark:bg-slate-800';
-                            selectEl.add(opt);
-                        }
-                    });
-                }
+                let savedOpts = JSON.parse(localStorage.getItem('opsi_' + id)) || []; const selectEl = document.getElementById(id);
+                if(selectEl) { savedOpts.forEach(val => { if (!Array.from(selectEl.options).some(opt => opt.value === val)) { let opt = new Option(val, val); opt.className = 'dark:bg-slate-800'; selectEl.add(opt); } }); }
             });
 
-            // KHUSUS UNTUK SINKRONISASI NAMA NARKOTIKA MEDIS
-            let savedZat = JSON.parse(localStorage.getItem('shared_master_zat_narkotika'));
-            if (!savedZat) {
-                savedZat = [
-                    "Amphetamine (Amfetamin)",
-                    "Methamphetamine (Metamfetamin)",
-                    "Tetrahydrocannabinol",
-                    "Benzodiazepines (Benzodiazepin)"
-                ];
-                localStorage.setItem('shared_master_zat_narkotika', JSON.stringify(savedZat));
-            }
-            const selectNarkotika = document.getElementById('nama_narkotika_medis');
-            if(selectNarkotika) {
-                savedZat.forEach(val => {
-                    if (!Array.from(selectNarkotika.options).some(opt => opt.value === val)) {
-                        let opt = new Option(val, val);
-                        opt.className = 'dark:bg-slate-800';
-                        selectNarkotika.add(opt);
+            // === SINKRONISASI 2 ARAH: KETERANGAN HUKUM REKOMENDASI (POIN 4.B) ===
+            let ketHukumSavedOpts = JSON.parse(localStorage.getItem('opsi_rekomendasi_keterangan')) || [];
+            const selectKetHukum = document.getElementById('rekomendasi_keterangan');
+            if(selectKetHukum) {
+                // 1. Tarik semua opsi kustom hasil dari klik "+ Tambah"
+                ketHukumSavedOpts.forEach(val => {
+                    if (!Array.from(selectKetHukum.options).some(opt => opt.value === val)) {
+                        let opt = new Option(val, val); opt.className = 'dark:bg-slate-800'; selectKetHukum.add(opt);
                     }
                 });
-                let currentNarkotika = "{{ old('nama_narkotika_medis', $asesmen->nama_narkotika_medis) }}";
-                if (currentNarkotika && !Array.from(selectNarkotika.options).some(opt => opt.value === currentNarkotika)) {
-                    let opt = new Option(currentNarkotika, currentNarkotika);
-                    opt.className = 'dark:bg-slate-800';
-                    selectNarkotika.add(opt);
+
+                // 2. Tarik Pilihan Terakhir Antar Halaman (Shared Value)
+                let sharedKetHukum = localStorage.getItem('shared_ket_hukum_{{ $asesmen->id }}');
+                let currentKetHukum = sharedKetHukum || "{{ old('rekomendasi_keterangan', $asesmen->rekomendasi_keterangan) }}";
+
+                if (currentKetHukum && !Array.from(selectKetHukum.options).some(opt => opt.value === currentKetHukum)) {
+                    let opt = new Option(currentKetHukum, currentKetHukum); opt.className = 'dark:bg-slate-800'; selectKetHukum.add(opt);
                 }
+                if(currentKetHukum) selectKetHukum.value = currentKetHukum;
+
+                // 3. Listener: Tiap kali user memilih sesuatu, langsung siarkan ke memori lokal untuk halaman sebelah
+                selectKetHukum.addEventListener('change', function() {
+                    localStorage.setItem('shared_ket_hukum_{{ $asesmen->id }}', this.value);
+                    if (typeof saveFormDraft === 'function') saveFormDraft();
+                });
+            }
+
+            // === SINKRONISASI 2 ARAH: NAMA GOLONGAN NARKOTIKA MEDIS ===
+            let savedZat = JSON.parse(localStorage.getItem('shared_master_zat_narkotika'));
+            if (!savedZat) { savedZat = [ "Amphetamine (Amfetamin)", "Methamphetamine (Metamfetamin)", "Tetrahydrocannabinol", "Benzodiazepines (Benzodiazepin)" ]; localStorage.setItem('shared_master_zat_narkotika', JSON.stringify(savedZat)); }
+            const selectNarkotika = document.getElementById('nama_narkotika_medis');
+            if(selectNarkotika) {
+                savedZat.forEach(val => { if (!Array.from(selectNarkotika.options).some(opt => opt.value === val)) { let opt = new Option(val, val); opt.className = 'dark:bg-slate-800'; selectNarkotika.add(opt); } });
+                let currentNarkotika = "{{ old('nama_narkotika_medis', $asesmen->nama_narkotika_medis) }}";
+                if (currentNarkotika && !Array.from(selectNarkotika.options).some(opt => opt.value === currentNarkotika)) { let opt = new Option(currentNarkotika, currentNarkotika); opt.className = 'dark:bg-slate-800'; selectNarkotika.add(opt); }
                 if(currentNarkotika) selectNarkotika.value = currentNarkotika;
             }
         }
@@ -829,7 +835,10 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             initAllCustomSelects();
+
+            // JALUR SINKRONISASI DATA KE DROPDOWN JS
             loadSemuaOpsiLokal();
+
             loadFormDraft();
             syncDurasiRawat();
 

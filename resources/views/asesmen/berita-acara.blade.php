@@ -174,7 +174,7 @@
                     <div class="bg-white dark:bg-[#0F172A] p-6 md:p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700/50 shadow-sm relative z-[30] overflow-visible transition-colors">
                         <div class="absolute top-0 left-0 w-full h-1.5 bg-[#3B82F6] rounded-t-[2rem]"></div>
                         <h3 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 flex items-center gap-2 mt-1">
-                            <svg class="w-5 h-5 text-[#3B82F6]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            <svg class="w-5 h-5 text-[#3B82F6]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                             3. Narasi Hasil Pemeriksaan
                         </h3>
 
@@ -334,8 +334,8 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Status Klien</label>
                                     <select name="status_klien" class="block w-full text-sm">
-                                        <option value="penyalahguna" {{ old('status_klien', $asesmen->status_klien) == 'penyalahguna' ? 'selected' : '' }} class="dark:bg-slate-800">Penyalahguna</option>
-                                        <option value="korban penyalahguna" {{ old('status_klien', $asesmen->status_klien) == 'korban penyalahguna' ? 'selected' : '' }} class="dark:bg-slate-800">Korban Penyalahguna</option>
+                                        <option value="Penyalahguna" {{ old('status_klien', $asesmen->status_klien) == 'Penyalahguna' ? 'selected' : '' }} class="dark:bg-slate-800">Penyalahguna</option>
+                                        <option value="Korban Penyalahguna" {{ old('status_klien', $asesmen->status_klien) == 'Korban Penyalahguna' ? 'selected' : '' }} class="dark:bg-slate-800">Korban Penyalahguna</option>
                                     </select>
                                 </div>
                                 <div>
@@ -423,53 +423,27 @@
                                     <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5 italic">Terkunci. Data ini otomatis ditarik dari form pendaftaran awal (Edit Klien).</p>
                                 </div>
 
-                                <!-- DURASI REHABILITASI (SINKRON DENGAN REKOMENDASI VIA LOCAL STORAGE) -->
-                                <div>
-                                    <label class="block text-[12px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-1">Lama (Durasi) Rawat <span class="text-rose-500">*</span></label>
-                                    <div class="flex gap-2 items-center">
-                                        <div class="flex-1">
-                                            <select name="rekomendasi_durasi" id="rekomendasi_durasi" required class="block w-full text-sm">
-                                                <option value="" class="dark:bg-slate-800">-- Pilih Waktu Perawatan --</option>
-                                                @php
-                                                    $valDurasi = old('rekomendasi_durasi', $asesmen->lama_perawatan ?? $asesmen->rekomendasi_durasi ?? '');
-                                                    $defaultsDurasi = ['1 bulan', '2 bulan', '3 bulan', '1-3 bulan'];
-                                                @endphp
-                                                @if($valDurasi !== '')
-                                                    <option value="{{ $valDurasi }}" selected class="dark:bg-slate-800">{{ $valDurasi }}</option>
-                                                @endif
-                                                @foreach($defaultsDurasi as $d)
-                                                    @if($d !== $valDurasi)
-                                                        <option value="{{ $d }}" class="dark:bg-slate-800">{{ $d }}</option>
-                                                    @endif
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <button type="button" onclick="openTambahModal('rekomendasi_durasi', 'Lama (Durasi) Rawat', 'lama_perawatan')" class="px-4 py-3 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-xl text-[11px] font-bold hover:bg-emerald-100 dark:hover:bg-emerald-800/50 transition shadow-sm whitespace-nowrap">+ TAMBAH</button>
-                                        <button type="button" onclick="openKelolaModal('rekomendasi_durasi', 'Lama (Durasi) Rawat', 'lama_perawatan')" class="px-4 py-3 bg-white dark:bg-[#0F172A] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm whitespace-nowrap">KELOLA</button>
-                                    </div>
-                                </div>
-
-                                <!-- KETERANGAN HUKUM REKOMENDASI -->
+                                <!-- KETERANGAN HUKUM REKOMENDASI (SINKRON 2 ARAH) -->
                                 <div class="md:col-span-2 mt-2">
-                                    <label class="block text-[12px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-1">Keterangan Hukum Rekomendasi</label>
+                                    <label class="block text-[12px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-1">Keterangan Hukum Rekomendasi (Poin 4.b)</label>
                                     <div class="flex flex-col sm:flex-row gap-3">
                                         <div class="flex-1">
-                                            <select name="rekomendasi_keterangan" id="rekomendasi_keterangan" required class="block w-full text-sm" onchange="if(typeof saveFormDraft === 'function') saveFormDraft();">
+                                            <select name="rekomendasi_keterangan" id="rekomendasi_keterangan" required class="block w-full text-sm">
                                                 <option value="" class="dark:bg-slate-800">-- Pilih Keterangan Hukum --</option>
                                                 @php
                                                     $ketList = [
-                                                        "Hasil pemeriksaan urine positif narkotika, tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
-                                                        "Hasil pemeriksaan urine negatif narkotika, tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
-                                                        "Hasil pemeriksaan urine positif narkotika, dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
-                                                        "Hasil pemeriksaan urine negatif narkotika, dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
-                                                        "Hasil pemeriksaan urine positif narkotika, tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
-                                                        "Hasil pemeriksaan urine negatif narkotika, tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
-                                                        "Hasil pemeriksaan urine positif narkotika, dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
-                                                        "Hasil pemeriksaan urine negatif narkotika, dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika."
+                                                        "Hasil pemeriksaan urine/rambut positif narkotika tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                        "Hasil pemeriksaan urine/rambut negatif narkotika tanpa barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                        "Hasil pemeriksaan urine/rambut positif narkotika dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                        "Hasil pemeriksaan urine/rambut negatif narkotika dengan barang bukti narkotika dan tidak terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                        "Hasil pemeriksaan urine/rambut positif narkotika tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                        "Hasil pemeriksaan urine/rambut negatif narkotika tanpa barang bukti narkotika, namun terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                        "Hasil pemeriksaan urine/rambut positif narkotika dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika.",
+                                                        "Hasil pemeriksaan urine/rambut negatif narkotika dengan barang bukti narkotika dan terdapat keterlibatan dalam jaringan peredaran gelap narkotika."
                                                     ];
                                                     $savedKet = old('rekomendasi_keterangan', $asesmen->rekomendasi_keterangan);
                                                 @endphp
-                                                @if($savedKet !== '' && !in_array($savedKet, $ketList))
+                                                @if($savedKet !== '' && $savedKet !== null && !in_array($savedKet, $ketList))
                                                     <option value="{{ $savedKet }}" selected class="dark:bg-slate-800">{{ $savedKet }}</option>
                                                 @endif
                                                 @foreach($ketList as $ket)
@@ -478,10 +452,11 @@
                                             </select>
                                         </div>
                                         <div class="flex gap-2 shrink-0 justify-center sm:justify-start">
-                                            <button type="button" onclick="openTambahModal('rekomendasi_keterangan', 'Keterangan Hukum Rekomendasi')" class="px-5 py-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-black text-[10px] uppercase tracking-widest rounded-[1.25rem] hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors shadow-sm whitespace-nowrap">+ Tambah</button>
-                                            <button type="button" onclick="openKelolaModal('rekomendasi_keterangan', 'Keterangan Hukum Rekomendasi')" class="px-5 py-3 bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest rounded-[1.25rem] hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm whitespace-nowrap">Kelola</button>
+                                            <button type="button" onclick="openTambahModal('rekomendasi_keterangan', 'Keterangan Hukum')" class="px-5 py-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-black text-[10px] uppercase tracking-widest rounded-[1.25rem] hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors shadow-sm whitespace-nowrap">+ Tambah</button>
+                                            <button type="button" onclick="openKelolaModal('rekomendasi_keterangan', 'Keterangan Hukum')" class="px-5 py-3 bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest rounded-[1.25rem] hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm whitespace-nowrap">Kelola</button>
                                         </div>
                                     </div>
+                                    <p class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mt-2 ml-1">Tersinkronisasi 2 arah dengan Surat Rekomendasi.</p>
                                 </div>
                             </div>
                         </div>
@@ -597,9 +572,6 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- JAVASCRIPT LOGIC -->
-    <!-- ========================================== -->
-    <!-- ========================================== -->
     <!-- JAVASCRIPT LOGIC (BERITA ACARA) -->
     <!-- ========================================== -->
     <script>
@@ -690,7 +662,8 @@
                 else if (isRose) { btn.className = btnBaseClass + 'bg-rose-50 border-rose-100 text-rose-700 hover:border-rose-300 dark:bg-rose-900/20 dark:border-rose-800/50 dark:text-rose-400'; }
                 else { btn.className = btnBaseClass + 'bg-white border-slate-200 text-slate-700 hover:border-indigo-300 dark:bg-[#0F172A] dark:border-slate-700 dark:text-slate-200'; }
 
-                const span = document.createElement('span'); span.className = 'truncate pointer-events-none flex-1';
+                const span = document.createElement('span');
+                span.className = 'pointer-events-none flex-1 whitespace-normal break-words pr-2';
                 let selectedText = '-- Pilih --';
 
                 let isIndexValid = select.selectedIndex >= 0;
@@ -715,7 +688,8 @@
                 Array.from(select.options).forEach((opt, index) => {
                     if(opt.style.display === 'none') return;
                     hasVisibleOptions = true;
-                    const item = document.createElement('div'); item.className = 'px-4 py-2.5 mx-1.5 mt-0.5 rounded-xl cursor-pointer text-sm transition-colors ';
+                    const item = document.createElement('div');
+                    item.className = 'px-4 py-2.5 mx-1.5 mt-0.5 rounded-xl cursor-pointer text-sm transition-colors whitespace-normal break-words ';
 
                     let conditionDisableEmpty = opt.disabled ? (opt.value === '') : false;
 
@@ -801,18 +775,53 @@
         function closeTambahModal() { const m = document.getElementById('modalTambahDurasi'); m.children[1].classList.add('opacity-0', 'scale-95'); setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300); }
 
         function simpanOpsiBaruKhusus() {
-            const selectId = document.getElementById('tambah_target_id').value; const newValue = document.getElementById('tambah_input').value.trim();
+            const selectId = document.getElementById('tambah_target_id').value;
+            const newValue = document.getElementById('tambah_input').value.trim();
+
             if(newValue !== '') {
                 let els = [];
+                // Cek jika ini adalah kolom Durasi Perawatan (yang punya dua ID berbeda)
                 if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi') {
                     if(document.getElementById('lama_perawatan')) els.push(document.getElementById('lama_perawatan'));
                     if(document.getElementById('rekomendasi_durasi')) els.push(document.getElementById('rekomendasi_durasi'));
-                } else { els.push(document.getElementById(selectId)); }
-                els.forEach(el => { if (!Array.from(el.options).some(opt => opt.value === newValue)) { let opt = new Option(newValue, newValue); el.add(opt); } el.value = newValue; });
-                let keyToSave = currentStorageKey || selectId; let savedOpts = JSON.parse(localStorage.getItem('opsi_' + keyToSave)) || [];
-                if (!savedOpts.includes(newValue)) { savedOpts.push(newValue); localStorage.setItem('opsi_' + keyToSave, JSON.stringify(savedOpts)); }
-                if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi' || currentStorageKey === 'lama_perawatan') { localStorage.setItem('shared_durasi_rawat_{{ $asesmen->id }}', newValue); }
-                closeTambahModal(); if (typeof saveFormDraft === 'function') saveFormDraft();
+                } else {
+                    // Untuk form lain, termasuk Keterangan Hukum Rekomendasi
+                    const el = document.getElementById(selectId);
+                    if (el) els.push(el);
+                }
+
+                // Tambahkan opsi baru ke elemen Select di halaman
+                els.forEach(el => {
+                    if (!Array.from(el.options).some(opt => opt.value === newValue)) {
+                        let opt = new Option(newValue, newValue);
+                        opt.className = 'dark:bg-slate-800';
+                        el.add(opt);
+                    }
+                    el.value = newValue;
+                });
+
+                // Simpan ke Local Storage menggunakan Key yang benar
+                let keyToSave = currentStorageKey || selectId;
+                let storageString = (keyToSave === 'shared_master_zat_narkotika') ? keyToSave : 'opsi_' + keyToSave;
+                let savedOpts = JSON.parse(localStorage.getItem(storageString)) || [];
+
+                if (!savedOpts.includes(newValue)) {
+                    savedOpts.push(newValue);
+                    localStorage.setItem(storageString, JSON.stringify(savedOpts));
+                }
+
+                // KHUSUS Sinkronisasi Value Terpilih Antar Halaman (Durasi Rawat)
+                if (selectId === 'lama_perawatan' || selectId === 'rekomendasi_durasi' || keyToSave === 'lama_perawatan') {
+                    localStorage.setItem('shared_durasi_rawat_{{ $asesmen->id }}', newValue);
+                }
+
+                // KHUSUS Sinkronisasi Value Terpilih Antar Halaman (Keterangan Hukum Rekomendasi)
+                if (selectId === 'keterangan_hukum_select' || selectId === 'rekomendasi_keterangan' || keyToSave === 'rekomendasi_keterangan') {
+                    localStorage.setItem('shared_ket_hukum_{{ $asesmen->id }}', newValue);
+                }
+
+                closeTambahModal();
+                if (typeof saveFormDraft === 'function') saveFormDraft();
             }
         }
 
@@ -852,6 +861,34 @@
                 if(selectEl) { savedOpts.forEach(val => { if (!Array.from(selectEl.options).some(opt => opt.value === val)) { let opt = new Option(val, val); opt.className = 'dark:bg-slate-800'; selectEl.add(opt); } }); }
             });
 
+            // === SINKRONISASI 2 ARAH: KETERANGAN HUKUM REKOMENDASI (POIN 4.B) ===
+            let ketHukumSavedOpts = JSON.parse(localStorage.getItem('opsi_rekomendasi_keterangan')) || [];
+            const selectKetHukum = document.getElementById('rekomendasi_keterangan');
+            if(selectKetHukum) {
+                // 1. Tarik semua opsi kustom hasil dari klik "+ Tambah"
+                ketHukumSavedOpts.forEach(val => {
+                    if (!Array.from(selectKetHukum.options).some(opt => opt.value === val)) {
+                        let opt = new Option(val, val); opt.className = 'dark:bg-slate-800'; selectKetHukum.add(opt);
+                    }
+                });
+
+                // 2. Tarik Pilihan Terakhir Antar Halaman (Shared Value)
+                let sharedKetHukum = localStorage.getItem('shared_ket_hukum_{{ $asesmen->id }}');
+                let currentKetHukum = sharedKetHukum || "{{ old('rekomendasi_keterangan', $asesmen->rekomendasi_keterangan) }}";
+
+                if (currentKetHukum && !Array.from(selectKetHukum.options).some(opt => opt.value === currentKetHukum)) {
+                    let opt = new Option(currentKetHukum, currentKetHukum); opt.className = 'dark:bg-slate-800'; selectKetHukum.add(opt);
+                }
+                if(currentKetHukum) selectKetHukum.value = currentKetHukum;
+
+                // 3. Listener: Tiap kali user memilih sesuatu, langsung siarkan ke memori lokal untuk halaman sebelah
+                selectKetHukum.addEventListener('change', function() {
+                    localStorage.setItem('shared_ket_hukum_{{ $asesmen->id }}', this.value);
+                    if (typeof saveFormDraft === 'function') saveFormDraft();
+                });
+            }
+
+            // === SINKRONISASI 2 ARAH: NAMA GOLONGAN NARKOTIKA MEDIS ===
             let savedZat = JSON.parse(localStorage.getItem('shared_master_zat_narkotika'));
             if (!savedZat) { savedZat = [ "Amphetamine (Amfetamin)", "Methamphetamine (Metamfetamin)", "Tetrahydrocannabinol", "Benzodiazepines (Benzodiazepin)" ]; localStorage.setItem('shared_master_zat_narkotika', JSON.stringify(savedZat)); }
             const selectNarkotika = document.getElementById('nama_narkotika_medis');

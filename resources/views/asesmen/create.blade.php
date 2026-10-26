@@ -132,7 +132,7 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Usia <span class="text-[#3B82F6] dark:text-blue-400 ml-1 lowercase font-bold">(Otomatis)</span></label>
-                                <input type="text" name="usia" id="usia" value="" class="block w-full rounded-[1.25rem] border-transparent shadow-inner text-sm font-black bg-blue-50 dark:bg-[#1E293B] text-[#3B82F6] dark:text-blue-400 px-4 py-3 pointer-events-none" placeholder="0 Tahun" readonly>
+                                <input type="text" name="usia" id="usia" value="{{ old('usia') }}" class="block w-full rounded-[1.25rem] border-transparent shadow-inner text-sm font-black bg-blue-50 dark:bg-[#1E293B] text-[#3B82F6] dark:text-blue-400 px-4 py-3 pointer-events-none" placeholder="0 Tahun" readonly>
                             </div>
 
                             <div>
@@ -620,16 +620,15 @@
                         <!-- 21. saran_case_conference -->
                         <div>
                             <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Saran Sidang Case Conference</label>
-                            <input type="hidden" name="saran_case_conference" id="hidden_saran_cc" value="{{ old('saran_case_conference') }}">
-                            @php
-                                $saranLama = old('saran_case_conference');
-                                $saranList = $saranLama ? array_map('trim', explode(",", $saranLama)) : [];
-                            @endphp
                             <div class="grid grid-cols-1 gap-3">
-                                <input type="text" class="saran-cc-input block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="1. ..." value="{{ $saranList[0] ?? '' }}">
-                                <input type="text" class="saran-cc-input block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="2. ..." value="{{ $saranList[1] ?? '' }}">
-                                <input type="text" class="saran-cc-input block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="3. ..." value="{{ $saranList[2] ?? '' }}">
-                                <input type="text" class="saran-cc-input block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="4. ..." value="{{ $saranList[3] ?? '' }}">
+                                <!-- Tambahkan name="saran_1" dan hapus logika $saranList -->
+                                <input type="text" name="saran_1" value="{{ old('saran_1') }}" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="1. ...">
+
+                                <input type="text" name="saran_2" value="{{ old('saran_2') }}" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="2. ...">
+
+                                <input type="text" name="saran_3" value="{{ old('saran_3') }}" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="3. ...">
+
+                                <input type="text" name="saran_4" value="{{ old('saran_4') }}" class="block w-full rounded-[1.25rem] border-slate-200 dark:border-slate-700 shadow-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#0F172A] transition-all px-4 py-3 outline-none" placeholder="4. ...">
                             </div>
                         </div>
                     </div>

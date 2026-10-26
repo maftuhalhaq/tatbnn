@@ -73,36 +73,58 @@
             <!-- 2. BLOK MANAJEMEN DATA MASSAL (SOLID PUTIH) -->
             @can('manage-data')
             <div class="bg-white dark:bg-[#1E293B] p-6 sm:p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.3)] transition-colors duration-300 relative z-20 isolate transform-gpu">
-                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
-                    <div class="flex items-start gap-4">
-                        <div class="p-3 bg-emerald-50 dark:bg-emerald-800/40 text-emerald-500 dark:text-emerald-400 rounded-2xl border border-emerald-100 dark:border-emerald-700/50">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </div>
-                        <div>
-                            <h3 class="font-black text-slate-800 dark:text-slate-200 text-base tracking-tight">Manajemen Data Massal Excel</h3>
-                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">Unduh template kosong untuk diisi secara luring (offline), lalu unggah kembali ke sistem untuk mempercepat proses input data banyak klien sekaligus.</p>
-                        </div>
+                <!-- Header Card -->
+                <div class="flex items-start gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-5">
+                    <div class="p-3 bg-emerald-50 dark:bg-emerald-800/40 text-emerald-500 dark:text-emerald-400 rounded-2xl border border-emerald-100 dark:border-emerald-700/50">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     </div>
+                    <div>
+                        <h3 class="font-black text-slate-800 dark:text-slate-200 text-base tracking-tight">Manajemen Data Massal Excel</h3>
+                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">Unduh template kosong untuk diisi secara luring (offline), lalu unggah pada kolom yang sesuai untuk mempercepat proses input data banyak klien sekaligus.</p>
+                    </div>
+                </div>
 
-                    <div class="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
-                        <!-- DUA TOMBOL TEMPLATE -->
-                        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                            <a href="{{ route('asesmen.downloadTemplate', ['type' => 'rekap']) }}" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2.5 bg-slate-50 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-200 transition-colors shadow-sm transform-gpu" title="Unduh Template Rekap TAT">
+                <!-- 2 Columns Action Area -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- KOLOM 1: DOWNLOAD TEMPLATE -->
+                    <div>
+                        <h4 class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 ml-1">Langkah 1: Unduh Template Kosong</h4>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <a href="{{ route('asesmen.downloadTemplate', ['type' => 'rekap']) }}" class="flex-1 inline-flex justify-center items-center px-4 py-3 bg-slate-50 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-[1.25rem] font-bold text-[10px] uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-200 transition-colors shadow-sm transform-gpu" title="Unduh Template Rekap TAT">
                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                 Template Rekap
                             </a>
-                            <a href="{{ route('asesmen.downloadTemplate', ['type' => 'cc']) }}" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2.5 bg-slate-50 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-200 transition-colors shadow-sm transform-gpu" title="Unduh Template Case Conference">
+                            <a href="{{ route('asesmen.downloadTemplate', ['type' => 'cc']) }}" class="flex-1 inline-flex justify-center items-center px-4 py-3 bg-slate-50 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-[1.25rem] font-bold text-[10px] uppercase tracking-widest text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/30 hover:border-sky-200 transition-colors shadow-sm transform-gpu" title="Unduh Template Case Conference">
                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                 Template Case Conf.
                             </a>
                         </div>
+                    </div>
 
-                        <!-- TOMBOL IMPORT -->
-                        <form action="{{ route('asesmen.import') }}" method="POST" enctype="multipart/form-data" class="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2 bg-slate-50 dark:bg-[#0F172A] p-1.5 rounded-[1.25rem] border border-slate-200 dark:border-slate-700 shadow-sm transform-gpu">
-                            @csrf
-                            <input type="file" name="file_excel" accept=".xlsx, .xls, .csv" required class="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-2 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-white dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-300 hover:file:bg-slate-100 dark:hover:file:bg-slate-700 cursor-pointer transition-colors shadow-sm">
-                            <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] uppercase tracking-widest font-black rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition shadow-md">Import</button>
-                        </form>
+                    <!-- KOLOM 2: UPLOAD DATA -->
+                    <div>
+                        <h4 class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 ml-1">Langkah 2: Unggah Data (Pilih Sesuai Format)</h4>
+                        <div class="flex flex-col gap-3">
+                            <!-- Import Rekap -->
+                            <form action="{{ route('asesmen.import', ['type' => 'rekap']) }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-center justify-between bg-emerald-50/50 dark:bg-emerald-900/10 p-2 rounded-2xl border border-emerald-200 dark:border-emerald-800 shadow-sm transition-colors gap-2">
+                                @csrf
+                                <div class="flex items-center w-full">
+                                    <span class="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 w-28 shrink-0 pl-2 uppercase tracking-widest">Format Rekap:</span>
+                                    <input type="file" name="file_excel" accept=".xlsx, .xls, .csv" required class="block w-full text-[10px] text-slate-500 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[9px] file:font-bold file:uppercase file:tracking-widest file:bg-white dark:file:bg-slate-800 file:text-emerald-700 dark:file:text-emerald-400 hover:file:bg-emerald-100 dark:hover:file:bg-emerald-900/50 cursor-pointer transition-colors shadow-sm outline-none">
+                                </div>
+                                <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-emerald-600 text-white text-[10px] uppercase tracking-widest font-black rounded-xl hover:bg-emerald-700 transition shadow-md whitespace-nowrap">Import</button>
+                            </form>
+
+                            <!-- Import Case Conf -->
+                            <form action="{{ route('asesmen.import', ['type' => 'cc']) }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-center justify-between bg-sky-50/50 dark:bg-sky-900/10 p-2 rounded-2xl border border-sky-200 dark:border-sky-800 shadow-sm transition-colors gap-2">
+                                @csrf
+                                <div class="flex items-center w-full">
+                                    <span class="text-[10px] font-bold text-sky-800 dark:text-sky-400 w-28 shrink-0 pl-2 uppercase tracking-widest">Format Case Conf:</span>
+                                    <input type="file" name="file_excel" accept=".xlsx, .xls, .csv" required class="block w-full text-[10px] text-slate-500 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[9px] file:font-bold file:uppercase file:tracking-widest file:bg-white dark:file:bg-slate-800 file:text-sky-700 dark:file:text-sky-400 hover:file:bg-sky-100 dark:hover:file:bg-sky-900/50 cursor-pointer transition-colors shadow-sm outline-none">
+                                </div>
+                                <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-blue-600 text-white text-[10px] uppercase tracking-widest font-black rounded-xl hover:bg-blue-700 transition shadow-md whitespace-nowrap">Import</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -324,43 +346,42 @@
                         </thead>
                         <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50 bg-white dark:bg-[#1E293B]">
                             @forelse($asesmens as $index => $item)
-                                @php
-                                    $usiaKlien = '-';
-                                    if (!empty($item->tgl_lahir)) {
-                                        try { $usiaKlien = \Carbon\Carbon::parse($item->tgl_lahir)->age . ' Tahun'; } catch (\Exception $e) {}
-                                    }
-                                    $bb_gabungan = ($item->berat_bb ? $item->berat_bb . ' gr' : '') . ($item->berat_bb && $item->deskripsi_bb ? ' - ' : '') . ($item->deskripsi_bb ?? '');
-
-                                    // LOGIKA KELENGKAPAN DATA
-                                    $kolomWajib = [
-                                        'no_register', 'no_bln', 'asal_pengajuan', 'no_surat_pengajuan', 'no_lkn',
-                                        'tgl_surat', 'tgl_berkas', 'tgl_pelaksanaan', 'tgl_tangkap',
-                                        'nama_lengkap', 'nik', 'kewarganegaraan', 'agama', 'tempat_lahir', 'tgl_lahir', 'jenis_kelamin', 'no_hp',
-                                        'pendidikan_id', 'pekerjaan_id', 'penghasilan_rata_rata', 'alamat_ktp', 'alamat_domisili',
-                                        'narkotika_id', 'berat_bb', 'deskripsi_bb', 'pasal_sangkaan',
-                                        'status_hukum', 'keterlibatan_jaringan', 'cara_mendapatkan', 'dapat_dari_siapa',
-                                        'tes_urine', 'hasil_asesmen_hukum', 'hasil_asesmen_medis',
-                                        'aspek_hukum', 'aspek_medis', 'kesehatan_fisik', 'psikologi',
-                                        'alasan_penggunaan', 'kondisi_keluarga', 'tingkat_ketergantungan', 'pola_pemakaian', 'kondisi_lingkungan', 'saran_case_conference'
-                                    ];
-
-                                    $isDataUtamaLengkap = true;
-                                    foreach($kolomWajib as $kol) {
-                                        if ($item->$kol === null || trim((string)$item->$kol) === '') {
-                                            $isDataUtamaLengkap = false;
-                                            break;
+                                    @php
+                                        $usiaKlien = '-';
+                                        if (!empty($item->tgl_lahir)) {
+                                            try { $usiaKlien = \Carbon\Carbon::parse($item->tgl_lahir)->age . ' Tahun'; } catch (\Exception $e) {}
                                         }
-                                    }
+                                        $bb_gabungan = ($item->berat_bb ? $item->berat_bb . ' gr' : '') . ($item->berat_bb && $item->deskripsi_bb ? ' - ' : '') . ($item->deskripsi_bb ?? '');
 
-                                    $isBaLengkap = !empty($item->no_ba) && !empty($item->ketua_tat_nama);
-                                    $isRekomLengkap = !empty($item->no_surat_rekomendasi) && !empty($item->kepada_yth);
-                                    $isLengkapTotal = $isDataUtamaLengkap && $isBaLengkap && $isRekomLengkap;
-                                @endphp
+                                        // LOGIKA KELENGKAPAN DATA
+                                        $kolomWajib = [
+                                            'no_register', 'no_bln', 'asal_pengajuan', 'no_surat_pengajuan', 'no_lkn',
+                                            'tgl_surat', 'tgl_berkas', 'tgl_pelaksanaan', 'tgl_tangkap',
+                                            'nama_lengkap', 'nik', 'kewarganegaraan', 'tempat_lahir', 'tgl_lahir', 'jenis_kelamin', 'no_hp',
+                                            'pendidikan_id', 'pekerjaan_id', 'alamat_ktp', 'alamat_domisili',
+                                            'narkotika_id', 'berat_bb', 'deskripsi_bb', 'pasal_sangkaan',
+                                            'status_hukum', 'keterlibatan_jaringan', 'cara_mendapatkan', 'dapat_dari_siapa',
+                                            'tes_urine', 'hasil_asesmen_hukum', 'hasil_asesmen_medis',
+                                            'alasan_penggunaan', 'kondisi_keluarga', 'tingkat_ketergantungan', 'pola_pemakaian', 'kondisi_lingkungan'
+                                        ];
+
+                                        $isDataUtamaLengkap = true;
+                                        foreach($kolomWajib as $kol) {
+                                            if ($item->$kol === null || trim((string)$item->$kol) === '' || trim((string)$item->$kol) === '-') {
+                                                $isDataUtamaLengkap = false;
+                                                break;
+                                            }
+                                        }
+
+                                        $isBaLengkap = !empty($item->no_ba) && !empty($item->ketua_tat_nama) && trim((string)$item->no_ba) !== '-';
+                                        $isRekomLengkap = !empty($item->no_surat_rekomendasi) && !empty($item->kepada_yth) && trim((string)$item->no_surat_rekomendasi) !== '-';
+                                        $isLengkapTotal = $isDataUtamaLengkap && $isBaLengkap && $isRekomLengkap;
+                                    @endphp
 
                                 <tr class="hover:bg-slate-50 dark:hover:bg-[#0F172A] transition-colors duration-200 group">
                                     <td class="px-6 py-5 text-xs font-bold text-slate-400 dark:text-slate-500 align-top">{{ $asesmens->firstItem() + $index }}</td>
 
-                                    <!-- Identitas Klien -->
+                                    <!-- Kolom Identitas -->
                                     <td class="px-6 py-5 align-top">
                                         <div class="flex items-start gap-4">
                                             <div class="flex-shrink-0 w-10 h-10 relative">
@@ -376,15 +397,15 @@
                                                 <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Reg: <span class="font-bold text-slate-700 dark:text-slate-300">{{ $item->no_register ?? '-' }}</span></div>
                                                 <div class="mt-2.5 flex flex-col gap-2">
                                                     <div>
-                                                        @if($item->is_lengkap)
-    <span class="inline-flex px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 shadow-sm mt-2">
-        DATA LENGKAP
-    </span>
-@else
-    <span class="inline-flex px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-800/50 shadow-sm mt-2">
-        BELUM LENGKAP
-    </span>
-@endif
+                                                        @if($isLengkapTotal)
+                                                            <span class="inline-flex px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 shadow-sm mt-2">
+                                                                DATA LENGKAP
+                                                            </span>
+                                                        @else
+                                                            <span class="inline-flex px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-800/50 shadow-sm mt-2">
+                                                                BELUM LENGKAP
+                                                            </span>
+                                                        @endif
                                                     </div>
                                                     <div class="pt-2">
                                                         <div id="text-tanggal-{{ $item->id }}" class="flex items-center gap-1.5">
@@ -550,8 +571,20 @@
                                                             <span class="block text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest mb-1">Rekomendasi (Instansi)</span>
                                                             <p class="font-black text-sm text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 px-3 py-1.5 rounded-lg inline-block">{{ $item->rekomendasi_input ?? $item->rekomendasi->tempat_rehabilitasi ?? '-' }}</p>
                                                         </div>
-                                                        <div><span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Keterangan Hukum</span><p class="font-medium text-sm text-slate-600 dark:text-slate-400 italic">"{{ $item->rekomendasi_keterangan ?? $item->keterangan_tambahan ?? '-' }}"</p></div>
-                                                        <div><span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Saran Sidang</span><p class="font-bold text-sm text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-[#0F172A] p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 whitespace-pre-line">{{ $item->saran_case_conference ?? '-' }}</p></div>
+                                                        <div><span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Keterangan Tambahan</span><p class="font-medium text-sm text-slate-600 dark:text-slate-400 italic">"{{ $item->keterangan_tambahan ?? 'Tidak ada keterangan tambahan.' }}"</p></div>
+                                                        <div>
+                                                            <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Saran Sidang</span>
+                                                            <div class="font-bold text-sm text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-[#0F172A] p-3.5 rounded-xl border border-slate-100 dark:border-slate-700/50 space-y-1">
+                                                                @if($item->saran_1 || $item->saran_2 || $item->saran_3 || $item->saran_4)
+                                                                    @if($item->saran_1) <p>1. {{ $item->saran_1 }}</p> @endif
+                                                                    @if($item->saran_2) <p>2. {{ $item->saran_2 }}</p> @endif
+                                                                    @if($item->saran_3) <p>3. {{ $item->saran_3 }}</p> @endif
+                                                                    @if($item->saran_4) <p>4. {{ $item->saran_4 }}</p> @endif
+                                                                @else
+                                                                    <p>-</p>
+                                                                @endif
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

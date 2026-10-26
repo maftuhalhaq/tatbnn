@@ -1,6 +1,6 @@
 <table style="border-collapse: collapse;">
     <thead>
-        <tr><th colspan="23" style="text-align: center; font-weight: bold; font-size: 14px; background-color: #9bc2e6;">DATA CASE CONFERENCE</th></tr>
+        <tr><th colspan="26" style="text-align: center; font-weight: bold; font-size: 14px; background-color: #9bc2e6;">DATA CASE CONFERENCE</th></tr>
         <tr>
             <th rowspan="2" style="vertical-align: center; text-align: center; font-weight: bold; background-color: #9bc2e6;">NO</th>
             <th rowspan="2" style="vertical-align: center; text-align: center; font-weight: bold; background-color: #9bc2e6;">NAMA KLIEN</th>
@@ -18,7 +18,7 @@
             <th rowspan="2" style="vertical-align: center; text-align: center; font-weight: bold; background-color: #9bc2e6;">KONDISI LINGKUNGAN</th>
             <th rowspan="2" style="vertical-align: center; text-align: center; font-weight: bold; background-color: #9bc2e6;">REKOMENDASI</th>
             <th rowspan="2" style="vertical-align: center; text-align: center; font-weight: bold; background-color: #9bc2e6;">KETERANGAN</th>
-            <th rowspan="2" style="vertical-align: center; text-align: center; font-weight: bold; background-color: #9bc2e6;">SARAN</th>
+            <th colspan="4" rowspan="2" style="vertical-align: center; text-align: center; font-weight: bold; background-color: #9bc2e6;">SARAN</th>
         </tr>
         <tr>
             <th style="vertical-align: center; text-align: center; font-weight: bold; background-color: #9bc2e6;">STATUS HUKUM</th>
@@ -59,7 +59,12 @@
                 <td style="vertical-align: top;">{{ $item->kondisi_lingkungan }}</td>
                 <td style="vertical-align: top;">{{ $item->rekomendasi_input ?? $item->rekomendasi->tempat_rehabilitasi ?? '' }}</td>
                 <td style="vertical-align: top;">{{ $item->keterangan_tambahan }}</td>
-                <td style="vertical-align: top;">{{ $item->saran_case_conference }}</td>
+
+                <!-- 4 Kolom Saran Baru -->
+                <td style="vertical-align: top;">{{ $item->saran_1 }}</td>
+                <td style="vertical-align: top;">{{ $item->saran_2 }}</td>
+                <td style="vertical-align: top;">{{ $item->saran_3 }}</td>
+                <td style="vertical-align: top;">{{ $item->saran_4 }}</td>
             </tr>
         @endforeach
     </tbody>

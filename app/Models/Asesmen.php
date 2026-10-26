@@ -4,135 +4,84 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Asesmen extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
-    // Mengizinkan semua kolom diisi secara massal kecuali kolom 'id'
-    // Otomatis mengizinkan penyimpanan 'foto_klien'
-    protected $guarded = ['id'];
-
-    // Menentukan nama tabel secara eksplisit
     protected $table = 'asesmens';
 
-    // Konfigurasi Primary Key UUID
-    protected $keyType = 'string';
-    public $incrementing = false;
+    protected $fillable = [
+        'nama_lengkap', 'nik', 'jenis_kelamin', 'tempat_lahir', 'tgl_lahir',
+        'usia', 
+        'kewarganegaraan', 'agama', 'pendidikan_id', 'pekerjaan_id',
+        'rekomendasi_id', 'narkotika_id', 'alamat_ktp', 'alamat_domisili',
+        'no_register', 'no_bln', 'asal_pengajuan', 'no_surat_pengajuan',
+        'no_lkn', 'tgl_surat', 'tgl_berkas', 'tgl_pelaksanaan', 'tgl_tangkap',
+        'berat_bb', 'pasal_sangkaan', 'deskripsi_bb', 'hasil_asesmen_hukum',
+        'hasil_asesmen_medis', 'pelaksanaan', 'penghasilan_rata_rata',
+        'status_hukum', 'keterlibatan_jaringan', 'cara_mendapatkan',
+        'dapat_dari_siapa', 'kesehatan_fisik', 'psikologi', 'tes_urine',
+        'alasan_penggunaan', 'kondisi_keluarga', 'tingkat_ketergantungan',
+        'pola_pemakaian', 'kondisi_lingkungan', 'keterangan_tambahan',
+        'saran_1', 'saran_2', 'saran_3', 'saran_4', 'aspek_hukum', 'aspek_medis'
+    ];
 
-    // Event Booting: Otomatis generate UUID saat data baru dibuat
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            if (empty($model->id)) {
-                $model->id = (string) Str::uuid();
-            }
-        });
-    }
+    // Mengizinkan semua kolom diisi secara massal kecuali 'id'
+    //
 
-    // --- Relasi BelongsTo ke Tabel Master ---
-    public function pekerjaan()
-    {
-        return $this->belongsTo(Pekerjaan::class, 'pekerjaan_id');
-    }
+    // =========================================================================
+    // RELASI DATABASE
+    // =========================================================================
 
-    public function narkotika()
-    {
-        return $this->belongsTo(Narkotika::class, 'narkotika_id');
-    }
-
-    public function rekomendasi()
-    {
-        return $this->belongsTo(Rekomendasi::class, 'rekomendasi_id');
-    }
-
+    /**
+     * Relasi ke tabel Master Pendidikan
+     */
     public function pendidikan()
     {
         return $this->belongsTo(Pendidikan::class, 'pendidikan_id');
     }
 
-    public function user()
+    /**
+     * Relasi ke tabel Master Pekerjaan
+     */
+    public function pekerjaan()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(Pekerjaan::class, 'pekerjaan_id');
     }
 
-
-    public function getStatusKelengkapanAttribute()
+    /**
+     * Relasi ke tabel Master Narkotika
+     */
+    public function narkotika()
     {
-        // 1. Cek Field Utama dari halaman Create/Edit
-        $kolomUtama = [
-            'nama_lengkap',
-            'nik',
-            'no_register',
-            'no_bln',
-            'asal_pengajuan',
-            'no_surat_pengajuan',
-            'no_lkn',
-            'tgl_surat',
-            'tgl_berkas',
-            'tgl_pelaksanaan',
-            'tgl_tangkap',
-            'tempat_lahir',
-            'tgl_lahir',
-            'jenis_kelamin',
-            'kewarganegaraan',
-            'agama',
-            'alamat_ktp',
-            'alamat_domisili',
-            'berat_bb',
-            'pasal_sangkaan',
-            'deskripsi_bb',
-            'status_hukum',
-            'keterlibatan_jaringan',
-            'cara_mendapatkan',
-            'dapat_dari_siapa',
-            'kesehatan_fisik',
-            'psikologi',
-            'tes_urine',
-            'alasan_penggunaan',
-            'kondisi_keluarga',
-            'tingkat_ketergantungan',
-            'pola_pemakaian',
-            'kondisi_lingkungan',
-            'saran_case_conference',
-            'hasil_asesmen_hukum',
-            'hasil_asesmen_medis'
-        ];
-
-        foreach ($kolomUtama as $kol) {
-            if (is_null($this->$kol) || trim((string) $this->$kol) === '') {
-                return 'BELUM LENGKAP';
-            }
-        }
-
-        // Cek Dropdown Narkotika
-        if (empty($this->narkotika_id) && empty($this->narkotika_input))
-            return 'BELUM LENGKAP';
-
-        // 2. Cek Berita Acara (Minimal ada No BA & Ketua TAT)
-        if (empty($this->no_ba) || empty($this->ketua_tat_nama)) {
-            return 'BELUM LENGKAP';
-        }
-
-        // 3. Cek Surat Rekomendasi (Minimal ada No Surat & Kepada Yth)
-        if (empty($this->no_surat_rekomendasi) || empty($this->kepada_yth)) {
-            return 'BELUM LENGKAP';
-        }
-
-        return 'DATA LENGKAP';
+        return $this->belongsTo(Narkotika::class, 'narkotika_id');
     }
 
-    // Tambahan fungsi boolean (true/false) agar lebih mudah dipanggil di Blade (HTML)
-    public function getIsLengkapAttribute()
+    /**
+     * Relasi ke tabel Master Rekomendasi
+     */
+    public function rekomendasi()
     {
-        return $this->status_kelengkapan === 'DATA LENGKAP';
+        return $this->belongsTo(Rekomendasi::class, 'rekomendasi_id');
     }
 
-    // --- Relasi Many-to-Many ke Tim Medis & Tim Hukum ---
+    /**
+     * Relasi pivot (many-to-many) ke tabel Master Anggota (Tim TAT)
+     */
+    /**
+     * Relasi pivot (many-to-many) ke tabel Master Anggota (Tim TAT)
+     */
     public function anggotaTim()
     {
+        // Ubah 'anggota_id' menjadi 'master_anggota_id'
+        return $this->belongsToMany(MasterAnggota::class, 'asesmen_anggota', 'asesmen_id', 'master_anggota_id');
+    }
+
+    public function anggota()
+    {
+        // Ubah 'anggota_id' menjadi 'master_anggota_id'
         return $this->belongsToMany(MasterAnggota::class, 'asesmen_anggota', 'asesmen_id', 'master_anggota_id');
     }
 }
